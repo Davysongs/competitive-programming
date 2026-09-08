@@ -1,0 +1,45 @@
+name: tests
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+
+      - name: Validate problem bundles
+        run: python scripts/validate_problem.py
+
+      - name: Check generated documentation
+        run: python scripts/generate_index.py --check
+
+      - name: Test repository tooling and algorithm references
+        run: python -m unittest discover -s tests -v
+
+      - name: Run all problem implementations
+        run: python scripts/run_all.py
+
+      - name: Check Python template
+        run: python -m py_compile templates/python/template.py
+
+      - name: Check C++ template
+        run: g++ -std=c++20 -Wall -Wextra -pedantic templates/cpp/template.cpp -o /tmp/cp-template-cpp
+
+      - name: Check Go template
+        run: go build -o /tmp/cp-template-go templates/go/template.go
+
+      - name: Check Rust template
+        run: rustc --edition=2021 templates/rust/template.rs -o /tmp/cp-template-rust
