@@ -1,0 +1,24 @@
+{
+  "id": "0001",
+  "legacy_id": "rec0se4dv5obqvcuu",
+  "slug": "lexicographic-rank-sum-queries",
+  "title": "Lexicographic Rank Sum Queries",
+  "difficulty": "Easy",
+  "category": [
+    "Strings"
+  ],
+  "tags": [
+    "suffix-automaton",
+    "lexicographic-order"
+  ],
+  "cognitive_focus": "Logic",
+  "resource_limits": {
+    "time_ms": 4000,
+    "memory_mb": 256
+  },
+  "io_mode": "json-stdio",
+  "available_languages": [
+    "python"
+  ],
+  "status": "verified"
+}

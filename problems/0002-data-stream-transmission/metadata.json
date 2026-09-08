@@ -1,0 +1,25 @@
+{
+  "id": "0002",
+  "legacy_id": "rec4joxvhmy3txfnn",
+  "slug": "data-stream-transmission",
+  "title": "Data Stream Transmission",
+  "difficulty": "Expert",
+  "category": [
+    "Greedy",
+    "Dynamic Programming"
+  ],
+  "tags": [
+    "exchange-argument",
+    "sequence-dp"
+  ],
+  "cognitive_focus": "Observation",
+  "resource_limits": {
+    "time_ms": 2000,
+    "memory_mb": 256
+  },
+  "io_mode": "json-stdio",
+  "available_languages": [
+    "python"
+  ],
+  "status": "verified"
+}
