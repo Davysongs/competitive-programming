@@ -225,3 +225,4 @@ characters.
 | Language | Implementation |
 | --- | --- |
 | Python | [`solution.py`](solutions/python/solution.py) |
+| Go | [`solution.go`](solutions/go/solution.go) |

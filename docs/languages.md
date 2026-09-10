@@ -21,8 +21,9 @@ for its existing problems.
 
 Go is a growth language for algorithms, data structures, CLI-adjacent work, and
 straightforward performance-conscious implementations. Goroutines should appear
-only when concurrency belongs to the problem. There are currently no verified Go
-problem implementations.
+only when concurrency belongs to the problem. The current Go solutions use only the
+standard library and deliberately favor explicit data layout and simple control
+flow over unnecessary abstractions.
 
 ## Rust
 
