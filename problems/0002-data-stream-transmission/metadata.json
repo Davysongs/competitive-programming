@@ -19,7 +19,8 @@
   },
   "io_mode": "json-stdio",
   "available_languages": [
-    "python"
+    "python",
+    "go"
   ],
   "status": "verified"
 }

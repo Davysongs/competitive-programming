@@ -21,8 +21,9 @@ complexity sections.
 
 - The repository initially contained no problem code, scripts, tests, build files,
   package files, or language implementations beyond the two staged Python bundles.
-- Neither bundle contained a C++ reference. No unverified C++, Go, or Rust solution
-  was manufactured during migration.
+- Neither bundle contained a C++ reference. No unverified C++ or Rust solution was
+  manufactured during migration. Go implementations were added later once a local
+  Go toolchain became available and passed the shared suites.
 - IDs and slugs were unique after mapping. Test names were unique and both JSON
   specifications parsed successfully.
 - A generated `__pycache__/reference.cpython-310.pyc` existed in the second staging
@@ -61,7 +62,6 @@ remain to preserve the supplied test set, although they add no new coverage.
 
 ## Verification Boundary
 
-Python is the only solution toolchain installed in the migration environment.
-C++/Go/Rust adapters and CI conventions are present, but the index reports zero
-implementations for those languages until real solutions can be compiled and pass
-the shared suites.
+Python and Go implementations are locally compiled and verified. C++ and Rust
+adapters and CI conventions are present, but the index reports zero implementations
+for those languages until real solutions can be compiled and pass the shared suites.

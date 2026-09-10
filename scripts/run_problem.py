@@ -5,6 +5,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 import shutil
 import subprocess
 import sys
@@ -90,12 +91,16 @@ def run_language(
         if shutil.which(required_command) is None:
             return 0, len(cases), [f"required command not found: {required_command}"]
         if build_command:
+            environment = os.environ.copy()
+            if language == "go":
+                environment["GOCACHE"] = str(build_directory / "go-cache")
             build = subprocess.run(
                 build_command,
                 capture_output=True,
                 text=True,
                 check=False,
                 timeout=120,
+                env=environment,
             )
             if build.returncode != 0:
                 detail = (build.stderr or build.stdout).strip()

@@ -6,7 +6,7 @@ The repository grows by verified depth, not translation volume.
 
 - Add diverse problems in arrays, searching, graphs, trees, and data structures.
 - Migrate existing C++ references when source bundles contain them.
-- Add the first idiomatic Go implementation after local or CI compilation is available.
+- Grow Go coverage selectively as suitable problems are added.
 - Select a Rust problem where ownership or memory layout is materially relevant.
 
 ## Tooling
