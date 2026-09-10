@@ -32,6 +32,11 @@ jobs:
       - name: Run all problem implementations
         run: python scripts/run_all.py
 
+      - name: Vet Go implementations
+        run: |
+          go vet problems/0001-lexicographic-rank-sum-queries/solutions/go/solution.go
+          go vet problems/0002-data-stream-transmission/solutions/go/solution.go
+
       - name: Check Python template
         run: python -m py_compile templates/python/template.py
 
