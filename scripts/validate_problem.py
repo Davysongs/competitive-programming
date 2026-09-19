@@ -17,6 +17,7 @@ from repository import (
     load_json,
     problem_directories,
 )
+from tests.test_generators import (
 from test_generators import (
     RANDOM_GENERATOR_TYPES,
     GeneratorError,

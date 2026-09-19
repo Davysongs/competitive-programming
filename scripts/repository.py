@@ -8,6 +8,7 @@ import json
 from pathlib import Path
 from typing import Any, Iterator, Sequence
 
+from tests.test_generators import generate_test_input
 from test_generators import generate_test_input
 
 
