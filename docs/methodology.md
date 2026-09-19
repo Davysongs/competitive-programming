@@ -24,6 +24,9 @@ lookup for large generated arrays whose output is element-wise. It avoids checki
 in megabytes of repeated values and, unlike a runtime reference oracle, remains an
 independent expectation.
 
+The complete schema, generator catalog, validation rules, and targeted execution
+commands are documented in [Runtime Test Generators](test-generators.md).
+
 ## Validation
 
 `validate_problem.py` checks naming, required files, metadata types, resource
