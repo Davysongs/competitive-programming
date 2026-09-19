@@ -123,6 +123,22 @@ class ProblemValidatorTests(unittest.TestCase):
         )
         self.assertTrue(any("explicit seed" in error for error in errors))
 
+    def test_unhashable_generator_type_is_rejected_without_crashing(self) -> None:
+        errors = self.validate_test(
+            {
+                "name": "example1",
+                "input": {},
+                "expected_output": None,
+                "generators": [
+                    {
+                        "type": [],
+                        "field": "s",
+                    }
+                ],
+            }
+        )
+        self.assertTrue(any("requires a non-empty 'type'" in error for error in errors))
+
 
 if __name__ == "__main__":
     unittest.main()

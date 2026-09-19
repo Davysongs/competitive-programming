@@ -18,7 +18,7 @@ from repository import (
     problem_directories,
 )
 
-from .test_generators import (
+from test_generators import (
     RANDOM_GENERATOR_TYPES,
     GeneratorError,
     validate_generator_config,
@@ -58,7 +58,12 @@ def _validate_generator(generator: Any, location: str, errors: list[str]) -> Non
         return
     if not isinstance(generator.get("field"), str) or not generator["field"]:
         errors.append(f"{location} requires a non-empty string field")
-    if generator.get("type") in RANDOM_GENERATOR_TYPES and "seed" not in generator:
+    generator_type = generator.get("type")
+    if (
+        isinstance(generator_type, str)
+        and generator_type in RANDOM_GENERATOR_TYPES
+        and "seed" not in generator
+    ):
         errors.append(f"{location} requires an explicit seed")
     try:
         validate_generator_config(generator)

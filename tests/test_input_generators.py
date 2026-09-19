@@ -10,7 +10,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "scripts"))
 
-from scripts.test_generators import (  # noqa: E402
+from test_generators import (  # noqa: E402
     GENERATOR_TYPES,
     GeneratorError,
     generate_test_input,
