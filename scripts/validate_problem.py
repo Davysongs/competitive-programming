@@ -36,6 +36,9 @@ REQUIRED_HEADINGS = (
     "## Implementations",
 )
 SUPPORTED_COMPARISONS = {"exact", "float_tolerance"}
+MAX_INLINE_INPUT_BYTES = 4_096
+
+
 def _example_json(readme: str) -> list[Any]:
     examples = readme.split("## Examples", maxsplit=1)
     if len(examples) != 2:
@@ -148,8 +151,17 @@ def validate_bundle(problem: Path) -> list[str]:
             errors.append(f"duplicate test name: {name}")
         else:
             names.add(name)
-        if not isinstance(test.get("input"), dict):
+        input_data = test.get("input")
+        if not isinstance(input_data, dict):
             errors.append(f"{location} requires an input object")
+            input_data = {}
+        elif len(
+            json.dumps(input_data, separators=(",", ":")).encode("utf-8")
+        ) > MAX_INLINE_INPUT_BYTES:
+            errors.append(
+                f"{location} input exceeds {MAX_INLINE_INPUT_BYTES} inline bytes; "
+                "replace large fields with generators"
+            )
         if "expected_output" not in test:
             errors.append(f"{location} is missing expected_output")
         expected = test.get("expected_output")
@@ -194,6 +206,14 @@ def validate_bundle(problem: Path) -> list[str]:
             errors.append(
                 f"{location} generates the same fields more than once: "
                 + ", ".join(duplicate_fields)
+            )
+        duplicated_inline_fields = sorted(
+            field for field in generator_fields if field in input_data
+        )
+        if duplicated_inline_fields:
+            errors.append(
+                f"{location} keeps generated fields inline: "
+                + ", ".join(duplicated_inline_fields)
             )
 
     try:
