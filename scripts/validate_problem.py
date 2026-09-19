@@ -17,6 +17,11 @@ from repository import (
     load_json,
     problem_directories,
 )
+from test_generators import (
+    RANDOM_GENERATOR_TYPES,
+    GeneratorError,
+    validate_generator_config,
+)
 
 
 DIRECTORY_PATTERN = re.compile(r"^(?P<id>\d{4})-(?P<slug>[a-z0-9]+(?:-[a-z0-9]+)*)$")
@@ -31,14 +36,6 @@ REQUIRED_HEADINGS = (
     "## Implementations",
 )
 SUPPORTED_COMPARISONS = {"exact", "float_tolerance"}
-SUPPORTED_GENERATORS = {
-    "random_string",
-    "random_string_array",
-    "random_packets",
-    "repeat_string",
-}
-
-
 def _example_json(readme: str) -> list[Any]:
     examples = readme.split("## Examples", maxsplit=1)
     if len(examples) != 2:
@@ -55,19 +52,14 @@ def _validate_generator(generator: Any, location: str, errors: list[str]) -> Non
     if not isinstance(generator, dict):
         errors.append(f"{location} must be an object")
         return
-    if generator.get("type") not in SUPPORTED_GENERATORS:
-        errors.append(f"{location} has unsupported type {generator.get('type')!r}")
-    if not isinstance(generator.get("field"), str):
-        errors.append(f"{location} requires a string field")
-    if generator.get("type") != "repeat_string" and not isinstance(
-        generator.get("seed"), int
-    ):
-        errors.append(f"{location} requires an integer seed")
-    if generator.get("type") == "repeat_string":
-        if not isinstance(generator.get("value"), str) or len(generator["value"]) != 1:
-            errors.append(f"{location} requires a one-character value")
-        if not isinstance(generator.get("length"), int) or generator["length"] < 0:
-            errors.append(f"{location} requires a non-negative integer length")
+    if not isinstance(generator.get("field"), str) or not generator["field"]:
+        errors.append(f"{location} requires a non-empty string field")
+    if generator.get("type") in RANDOM_GENERATOR_TYPES and "seed" not in generator:
+        errors.append(f"{location} requires an explicit seed")
+    try:
+        validate_generator_config(generator)
+    except GeneratorError as error:
+        errors.append(f"{location}: {error}")
 
 
 def validate_bundle(problem: Path) -> list[str]:
@@ -182,6 +174,27 @@ def validate_bundle(problem: Path) -> list[str]:
                 )
         if "generate" in test:
             _validate_generator(test["generate"], f"{location}.generate", errors)
+        generator_fields = [
+            generator["field"]
+            for generator in (
+                generators if isinstance(generators, list) else []
+            )
+            if isinstance(generator, dict) and isinstance(generator.get("field"), str)
+        ]
+        if isinstance(test.get("generate"), dict) and isinstance(
+            test["generate"].get("field"), str
+        ):
+            generator_fields.append(test["generate"]["field"])
+        duplicate_fields = sorted(
+            field
+            for field in set(generator_fields)
+            if generator_fields.count(field) > 1
+        )
+        if duplicate_fields:
+            errors.append(
+                f"{location} generates the same fields more than once: "
+                + ", ".join(duplicate_fields)
+            )
 
     try:
         readme = (problem / "README.md").read_text(encoding="utf-8")
