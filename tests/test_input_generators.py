@@ -132,6 +132,13 @@ class GeneratorTests(unittest.TestCase):
             {"type": "random_array", "n": 3, "min": 2, "max": 1},
             {"type": "random_packets", "n": 1, "q_min": 0, "q_max": 1},
             {
+                "type": "random_packets",
+                "n": 1,
+                "q_min": 0.11,
+                "q_max": 0.14,
+                "q_decimals": 1,
+            },
+            {
                 "type": "random_intervals",
                 "n": 3,
                 "min": 0,
@@ -143,6 +150,22 @@ class GeneratorTests(unittest.TestCase):
         for config in invalid:
             with self.subTest(config=config), self.assertRaises(GeneratorError):
                 validate_generator_config(config)
+
+    def test_random_packets_grid_bounds(self) -> None:
+        packets = generate_test_input(
+            {
+                "type": "random_packets",
+                "seed": 99,
+                "n": 20,
+                "q_min": 0.15,
+                "q_max": 0.24,
+                "q_decimals": 1,
+            }
+        )
+        self.assertEqual(len(packets), 20)
+        for _, q in packets:
+            self.assertEqual(q, 0.2)
+            self.assertIsInstance(q, float)
 
 
 if __name__ == "__main__":

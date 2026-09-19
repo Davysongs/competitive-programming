@@ -1099,8 +1099,8 @@
       "input": {},
       "expected_output": [
         [
-          200,
-          20100
+          50000,
+          250024993
         ]
       ],
       "generators": [
@@ -1108,14 +1108,14 @@
           "type": "repeat_string",
           "field": "s",
           "value": "a",
-          "length": 200
+          "length": 50000
         },
         {
           "type": "random_string_array",
           "field": "queries",
           "seed": 17,
           "n": 1,
-          "length": 200,
+          "length": 50000,
           "charset": "a"
         }
       ]

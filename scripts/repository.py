@@ -8,7 +8,7 @@ import json
 from pathlib import Path
 from typing import Any, Iterator, Sequence
 
-from test_generators import generate_test_input
+from tests.test_generators import generate_test_input
 
 
 ROOT = Path(__file__).resolve().parents[1]

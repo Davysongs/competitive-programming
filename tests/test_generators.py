@@ -6,6 +6,8 @@ expectations remain independent test data in ``tests.json``.
 
 from __future__ import annotations
 
+import decimal
+import math
 import random
 import string
 from collections.abc import Callable, Mapping
@@ -296,36 +298,49 @@ def _generate_random_intervals(
     return intervals
 
 
+def _packet_probability_bounds(
+    config: Mapping[str, Any],
+) -> tuple[float, float, int]:
+    minimum_probability = _number(config, "q_min", 0.1)
+    maximum_probability = _number(config, "q_max", 0.99)
+    decimals = _integer(config, "q_decimals", minimum=0, default=3)
+    if not 0 < minimum_probability <= maximum_probability <= 1:
+        raise GeneratorError("probabilities must satisfy 0 < q_min <= q_max <= 1")
+    scale = 10**decimals
+    dec_min = decimal.Decimal(str(minimum_probability))
+    dec_max = decimal.Decimal(str(maximum_probability))
+    k_min = math.ceil(dec_min * scale)
+    k_max = math.floor(dec_max * scale)
+    if k_min > k_max:
+        raise GeneratorError(
+            "no representable decimal-grid value exists in range [q_min, q_max]"
+        )
+    return k_min / scale, k_max / scale, decimals
+
+
 def _validate_random_packets(config: Mapping[str, Any]) -> None:
     _integer(config, "n", minimum=0)
     minimum_duration = _integer(config, "s_min", minimum=1, default=1)
     maximum_duration = _integer(
         config, "s_max", minimum=1, default=1_000_000_000
     )
-    minimum_probability = _number(config, "q_min", 0.1)
-    maximum_probability = _number(config, "q_max", 0.99)
-    _integer(config, "q_decimals", minimum=0, default=3)
     if minimum_duration > maximum_duration:
         raise GeneratorError("'s_min' cannot exceed 's_max'")
-    if not 0 < minimum_probability <= maximum_probability <= 1:
-        raise GeneratorError("probabilities must satisfy 0 < q_min <= q_max <= 1")
+    _packet_probability_bounds(config)
 
 
 def _generate_random_packets(
     rng: random.Random, config: Mapping[str, Any]
 ) -> list[list[int | float]]:
+    minimum_duration = int(config.get("s_min", 1))
+    maximum_duration = int(config.get("s_max", 1_000_000_000))
+    minimum_grid, maximum_grid, decimals = _packet_probability_bounds(config)
     return [
         [
-            rng.randint(
-                int(config.get("s_min", 1)),
-                int(config.get("s_max", 1_000_000_000)),
-            ),
+            rng.randint(minimum_duration, maximum_duration),
             round(
-                rng.uniform(
-                    float(config.get("q_min", 0.1)),
-                    float(config.get("q_max", 0.99)),
-                ),
-                int(config.get("q_decimals", 3)),
+                rng.uniform(minimum_grid, maximum_grid),
+                decimals,
             ),
         ]
         for _ in range(int(config["n"]))
