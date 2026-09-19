@@ -3,11 +3,12 @@
 from __future__ import annotations
 
 import copy
+import fnmatch
 import json
-import random
-import string
 from pathlib import Path
-from typing import Any, Iterator
+from typing import Any, Iterator, Sequence
+
+from test_generators import generate_test_input
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -53,59 +54,20 @@ def implemented_languages(problem: Path) -> list[str]:
     ]
 
 
-def _charset(name: str) -> str:
-    if name == "lowercase":
-        return string.ascii_lowercase
-    if name and all(character in string.ascii_letters for character in name):
-        return name
-    raise ValueError(f"unsupported generator charset: {name!r}")
-
-
-def _apply_generator(input_data: dict[str, Any], generator: dict[str, Any]) -> None:
-    generator_type = generator.get("type")
-    field = generator.get("field")
-    rng = random.Random(generator.get("seed"))
-
-    if generator_type == "random_string":
-        characters = _charset(generator["charset"])
-        input_data[field] = "".join(
-            rng.choice(characters) for _ in range(int(generator["length"]))
-        )
-    elif generator_type == "random_string_array":
-        characters = _charset(generator["charset"])
-        input_data[field] = [
-            "".join(
-                rng.choice(characters) for _ in range(int(generator["length"]))
-            )
-            for _ in range(int(generator["n"]))
-        ]
-    elif generator_type == "random_packets":
-        input_data[field] = [
-            [
-                rng.randint(int(generator["s_min"]), int(generator["s_max"])),
-                round(
-                    rng.uniform(float(generator["q_min"]), float(generator["q_max"])),
-                    int(generator["q_decimals"]),
-                ),
-            ]
-            for _ in range(int(generator["n"]))
-        ]
-    elif generator_type == "repeat_string":
-        value = str(generator["value"])
-        if len(value) != 1:
-            raise ValueError("repeat_string value must contain exactly one character")
-        input_data[field] = value * int(generator["length"])
-    else:
-        raise ValueError(f"unsupported generator type: {generator_type!r}")
+def _generators_for(test: dict[str, Any]) -> list[dict[str, Any]]:
+    generators = list(test.get("generators", []))
+    if "generate" in test:
+        generators.append(test["generate"])
+    return generators
 
 
 def materialize_test(test: dict[str, Any]) -> tuple[dict[str, Any], Any]:
     input_data = copy.deepcopy(test["input"])
-    generators = test.get("generators", [])
-    if "generate" in test:
-        generators = [*generators, test["generate"]]
-    for generator in generators:
-        _apply_generator(input_data, generator)
+    for generator in _generators_for(test):
+        field = generator.get("field")
+        if not isinstance(field, str) or not field:
+            raise ValueError("generator requires a non-empty 'field'")
+        input_data[field] = generate_test_input(generator)
 
     expected = copy.deepcopy(test["expected_output"])
     if isinstance(expected, dict) and "$map_input" in expected:
@@ -138,5 +100,18 @@ def values_equal(actual: Any, expected: Any, tolerance: float | None) -> bool:
     return actual == expected
 
 
-def test_cases(specification: dict[str, Any]) -> Iterator[dict[str, Any]]:
-    yield from specification.get("tests", [])
+def test_cases(
+    specification: dict[str, Any],
+    patterns: Sequence[str] = (),
+    generated_only: bool = False,
+) -> Iterator[dict[str, Any]]:
+    """Yield cases selected by name glob and generator presence."""
+    for test in specification.get("tests", []):
+        if patterns and not any(
+            fnmatch.fnmatchcase(str(test.get("name", "")), pattern)
+            for pattern in patterns
+        ):
+            continue
+        if generated_only and not (test.get("generators") or test.get("generate")):
+            continue
+        yield test

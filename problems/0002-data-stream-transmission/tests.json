@@ -666,18 +666,19 @@
         "k": 10
       },
       "expected_output": 354659.898367,
-      "generate": {
-        "type": "random_packets",
-        "field": "packets",
-        "base_test": "stress_ordering_n20",
-        "n": 200,
-        "seed": 7,
-        "s_min": 1,
-        "s_max": 1000,
-        "q_min": 0.5,
-        "q_max": 0.99,
-        "q_decimals": 3
-      }
+      "generators": [
+        {
+          "type": "random_packets",
+          "field": "packets",
+          "n": 200,
+          "seed": 7,
+          "s_min": 1,
+          "s_max": 1000,
+          "q_min": 0.5,
+          "q_max": 0.99,
+          "q_decimals": 3
+        }
+      ]
     },
     {
       "name": "stress_n200_k199",
@@ -687,18 +688,19 @@
         "k": 199
       },
       "expected_output": 43810.18943,
-      "generate": {
-        "type": "random_packets",
-        "field": "packets",
-        "base_test": "stress_ordering_n20",
-        "n": 200,
-        "seed": 7,
-        "s_min": 1,
-        "s_max": 1000,
-        "q_min": 0.5,
-        "q_max": 0.99,
-        "q_decimals": 3
-      }
+      "generators": [
+        {
+          "type": "random_packets",
+          "field": "packets",
+          "n": 200,
+          "seed": 7,
+          "s_min": 1,
+          "s_max": 1000,
+          "q_min": 0.5,
+          "q_max": 0.99,
+          "q_decimals": 3
+        }
+      ]
     },
     {
       "name": "stress_gen_n200_k0",
@@ -708,18 +710,19 @@
         "k": 0
       },
       "expected_output": 3.773062915706223e+27,
-      "generate": {
-        "type": "random_packets",
-        "field": "packets",
-        "base_test": "stress_ordering_n20",
-        "n": 200,
-        "seed": 13,
-        "s_min": 1,
-        "s_max": 1000,
-        "q_min": 0.5,
-        "q_max": 0.99,
-        "q_decimals": 3
-      }
+      "generators": [
+        {
+          "type": "random_packets",
+          "field": "packets",
+          "n": 200,
+          "seed": 13,
+          "s_min": 1,
+          "s_max": 1000,
+          "q_min": 0.5,
+          "q_max": 0.99,
+          "q_decimals": 3
+        }
+      ]
     },
     {
       "name": "stress_gen_n200_k50_highq",
@@ -729,18 +732,19 @@
         "k": 50
       },
       "expected_output": 118165.86878,
-      "generate": {
-        "type": "random_packets",
-        "field": "packets",
-        "base_test": "stress_ordering_n20",
-        "n": 200,
-        "seed": 99,
-        "s_min": 1,
-        "s_max": 1000,
-        "q_min": 0.9,
-        "q_max": 0.99,
-        "q_decimals": 3
-      }
+      "generators": [
+        {
+          "type": "random_packets",
+          "field": "packets",
+          "n": 200,
+          "seed": 99,
+          "s_min": 1,
+          "s_max": 1000,
+          "q_min": 0.9,
+          "q_max": 0.99,
+          "q_decimals": 3
+        }
+      ]
     },
     {
       "name": "stress_gen_n200_k50_lowq",
@@ -750,18 +754,19 @@
         "k": 50
       },
       "expected_output": 27992.590669,
-      "generate": {
-        "type": "random_packets",
-        "field": "packets",
-        "base_test": "stress_ordering_n20",
-        "n": 200,
-        "seed": 101,
-        "s_min": 1,
-        "s_max": 1000,
-        "q_min": 0.5,
-        "q_max": 0.7,
-        "q_decimals": 3
-      }
+      "generators": [
+        {
+          "type": "random_packets",
+          "field": "packets",
+          "n": 200,
+          "seed": 101,
+          "s_min": 1,
+          "s_max": 1000,
+          "q_min": 0.5,
+          "q_max": 0.7,
+          "q_decimals": 3
+        }
+      ]
     },
     {
       "name": "stress_gen_n200_large_s",
@@ -772,18 +777,19 @@
       },
       "expected_output": 125760967580.11441,
       "comparison_override": "float_tolerance",
-      "generate": {
-        "type": "random_packets",
-        "field": "packets",
-        "base_test": "stress_ordering_n20",
-        "n": 200,
-        "seed": 77,
-        "s_min": 100000000,
-        "s_max": 1000000000,
-        "q_min": 0.5,
-        "q_max": 0.99,
-        "q_decimals": 3
-      }
+      "generators": [
+        {
+          "type": "random_packets",
+          "field": "packets",
+          "n": 200,
+          "seed": 77,
+          "s_min": 100000000,
+          "s_max": 1000000000,
+          "q_min": 0.5,
+          "q_max": 0.99,
+          "q_decimals": 3
+        }
+      ]
     },
     {
       "name": "edge_min_n",

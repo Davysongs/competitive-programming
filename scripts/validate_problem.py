@@ -18,6 +18,12 @@ from repository import (
     problem_directories,
 )
 
+from test_generators import (
+    RANDOM_GENERATOR_TYPES,
+    GeneratorError,
+    validate_generator_config,
+)
+
 
 DIRECTORY_PATTERN = re.compile(r"^(?P<id>\d{4})-(?P<slug>[a-z0-9]+(?:-[a-z0-9]+)*)$")
 REQUIRED_HEADINGS = (
@@ -31,12 +37,7 @@ REQUIRED_HEADINGS = (
     "## Implementations",
 )
 SUPPORTED_COMPARISONS = {"exact", "float_tolerance"}
-SUPPORTED_GENERATORS = {
-    "random_string",
-    "random_string_array",
-    "random_packets",
-    "repeat_string",
-}
+MAX_INLINE_INPUT_BYTES = 4_096
 
 
 def _example_json(readme: str) -> list[Any]:
@@ -55,19 +56,19 @@ def _validate_generator(generator: Any, location: str, errors: list[str]) -> Non
     if not isinstance(generator, dict):
         errors.append(f"{location} must be an object")
         return
-    if generator.get("type") not in SUPPORTED_GENERATORS:
-        errors.append(f"{location} has unsupported type {generator.get('type')!r}")
-    if not isinstance(generator.get("field"), str):
-        errors.append(f"{location} requires a string field")
-    if generator.get("type") != "repeat_string" and not isinstance(
-        generator.get("seed"), int
+    if not isinstance(generator.get("field"), str) or not generator["field"]:
+        errors.append(f"{location} requires a non-empty string field")
+    generator_type = generator.get("type")
+    if (
+        isinstance(generator_type, str)
+        and generator_type in RANDOM_GENERATOR_TYPES
+        and "seed" not in generator
     ):
-        errors.append(f"{location} requires an integer seed")
-    if generator.get("type") == "repeat_string":
-        if not isinstance(generator.get("value"), str) or len(generator["value"]) != 1:
-            errors.append(f"{location} requires a one-character value")
-        if not isinstance(generator.get("length"), int) or generator["length"] < 0:
-            errors.append(f"{location} requires a non-negative integer length")
+        errors.append(f"{location} requires an explicit seed")
+    try:
+        validate_generator_config(generator)
+    except GeneratorError as error:
+        errors.append(f"{location}: {error}")
 
 
 def validate_bundle(problem: Path) -> list[str]:
@@ -156,8 +157,17 @@ def validate_bundle(problem: Path) -> list[str]:
             errors.append(f"duplicate test name: {name}")
         else:
             names.add(name)
-        if not isinstance(test.get("input"), dict):
+        input_data = test.get("input")
+        if not isinstance(input_data, dict):
             errors.append(f"{location} requires an input object")
+            input_data = {}
+        elif len(
+            json.dumps(input_data, separators=(",", ":")).encode("utf-8")
+        ) > MAX_INLINE_INPUT_BYTES:
+            errors.append(
+                f"{location} input exceeds {MAX_INLINE_INPUT_BYTES} inline bytes; "
+                "replace large fields with generators"
+            )
         if "expected_output" not in test:
             errors.append(f"{location} is missing expected_output")
         expected = test.get("expected_output")
@@ -182,6 +192,35 @@ def validate_bundle(problem: Path) -> list[str]:
                 )
         if "generate" in test:
             _validate_generator(test["generate"], f"{location}.generate", errors)
+        generator_fields = [
+            generator["field"]
+            for generator in (
+                generators if isinstance(generators, list) else []
+            )
+            if isinstance(generator, dict) and isinstance(generator.get("field"), str)
+        ]
+        if isinstance(test.get("generate"), dict) and isinstance(
+            test["generate"].get("field"), str
+        ):
+            generator_fields.append(test["generate"]["field"])
+        duplicate_fields = sorted(
+            field
+            for field in set(generator_fields)
+            if generator_fields.count(field) > 1
+        )
+        if duplicate_fields:
+            errors.append(
+                f"{location} generates the same fields more than once: "
+                + ", ".join(duplicate_fields)
+            )
+        duplicated_inline_fields = sorted(
+            field for field in generator_fields if field in input_data
+        )
+        if duplicated_inline_fields:
+            errors.append(
+                f"{location} keeps generated fields inline: "
+                + ", ".join(duplicated_inline_fields)
+            )
 
     try:
         readme = (problem / "README.md").read_text(encoding="utf-8")

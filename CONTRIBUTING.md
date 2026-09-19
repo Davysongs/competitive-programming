@@ -37,3 +37,10 @@ python scripts/generate_index.py --check
 Never change expected output solely to make a solution pass. If the statement,
 examples, and tests disagree, document the discrepancy and resolve the contract
 before migrating or implementing that problem.
+
+## Stress Fixtures
+
+Use [runtime generators](docs/test-generators.md) when a test input would otherwise
+be large or repetitive. Randomized specifications require explicit seeds, and the
+generated field must be omitted from the inline `input` object. Keep expected output
+independent—do not generate it by calling the implementation under test.

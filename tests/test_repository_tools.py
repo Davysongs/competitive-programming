@@ -10,7 +10,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "scripts"))
 
-from repository import materialize_test, values_equal  # noqa: E402
+from repository import materialize_test, test_cases, values_equal  # noqa: E402
 
 
 class RepositoryToolTests(unittest.TestCase):
@@ -59,6 +59,70 @@ class RepositoryToolTests(unittest.TestCase):
         )
         self.assertEqual(input_data, {"s": "xxx"})
         self.assertEqual(expected, 3)
+
+    def test_multiple_generators_do_not_mutate_test_specification(self) -> None:
+        test = {
+            "input": {"n": 8},
+            "expected_output": None,
+            "generators": [
+                {
+                    "type": "repeat_pattern",
+                    "field": "s",
+                    "pattern": "abc",
+                    "length": 8,
+                },
+                {
+                    "type": "random_array",
+                    "field": "values",
+                    "seed": 12,
+                    "n": 8,
+                    "min": 0,
+                    "max": 1,
+                },
+            ],
+        }
+        input_data, _ = materialize_test(test)
+        self.assertEqual(input_data["s"], "abcabcab")
+        self.assertEqual(len(input_data["values"]), 8)
+        self.assertEqual(test["input"], {"n": 8})
+
+    def test_generator_requires_target_field(self) -> None:
+        with self.assertRaisesRegex(ValueError, "field"):
+            materialize_test(
+                {
+                    "input": {},
+                    "expected_output": None,
+                    "generate": {
+                        "type": "repeat_string",
+                        "value": "a",
+                        "length": 3,
+                    },
+                }
+            )
+
+    def test_test_case_selection_supports_globs_and_generated_filter(self) -> None:
+        specification = {
+            "tests": [
+                {"name": "example1", "input": {}, "expected_output": None},
+                {
+                    "name": "stress_random",
+                    "input": {},
+                    "expected_output": None,
+                    "generators": [{"type": "repeat_string"}],
+                },
+                {
+                    "name": "stress_periodic",
+                    "input": {},
+                    "expected_output": None,
+                    "generate": {"type": "repeat_pattern"},
+                },
+            ]
+        }
+        selected = list(test_cases(specification, ["stress_*"], generated_only=True))
+        self.assertEqual(
+            [test["name"] for test in selected],
+            ["stress_random", "stress_periodic"],
+        )
 
 
 if __name__ == "__main__":

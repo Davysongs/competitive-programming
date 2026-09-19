@@ -65,6 +65,8 @@ packages are needed.
 python scripts/validate_problem.py
 python scripts/run_problem.py 0001
 python scripts/run_problem.py 0001 --language python
+python scripts/run_problem.py 0001 --generated-only
+python scripts/run_problem.py 0001 --test "stress_*"
 python scripts/run_all.py
 python -m unittest discover -s tests -v
 python scripts/generate_index.py --check
@@ -73,7 +75,8 @@ python scripts/generate_index.py --check
 The runner reads each problem's shared `tests.json`, materializes deterministic
 fixtures, invokes every available implementation through JSON standard input and
 output, and compares the parsed result. Native build artifacts are created only in
-the operating system's temporary directory.
+the operating system's temporary directory. See the [runtime generator guide](docs/test-generators.md)
+for compact stress specifications and targeted execution.
 
 ## Adding a Problem
 

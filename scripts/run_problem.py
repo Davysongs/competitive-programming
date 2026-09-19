@@ -145,6 +145,23 @@ def main() -> int:
     parser.add_argument("problem", help="numeric ID or full problem directory name")
     parser.add_argument("--language", choices=sorted(LANGUAGE_FILES))
     parser.add_argument("--timeout", type=float, help="per-test timeout in seconds")
+    parser.add_argument(
+        "--test",
+        action="append",
+        default=[],
+        metavar="GLOB",
+        help="run test names matching this glob; may be repeated",
+    )
+    parser.add_argument(
+        "--generated-only",
+        action="store_true",
+        help="run only cases that materialize generated input fields",
+    )
+    parser.add_argument(
+        "--list-tests",
+        action="store_true",
+        help="list matching tests without executing implementations",
+    )
     parser.add_argument("--quiet", action="store_true")
     arguments = parser.parse_args()
 
@@ -168,6 +185,23 @@ def main() -> int:
     if not languages:
         print(f"ERROR: {problem.name} has no implementations", file=sys.stderr)
         return 2
+
+    selected_tests = list(
+        test_cases(specification, arguments.test, arguments.generated_only)
+    )
+    if not selected_tests:
+        print("ERROR: no tests matched the requested selection", file=sys.stderr)
+        return 2
+    if arguments.list_tests:
+        for test in selected_tests:
+            kind = (
+                "generated"
+                if test.get("generators") or test.get("generate")
+                else "inline"
+            )
+            print(f"{test['name']}\t{kind}")
+        return 0
+    specification = {**specification, "tests": selected_tests}
 
     timeout_seconds = arguments.timeout or max(
         5.0, float(metadata["resource_limits"]["time_ms"]) / 1000 * 3
