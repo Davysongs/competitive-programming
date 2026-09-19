@@ -3,9 +3,10 @@
 from __future__ import annotations
 
 import copy
+import fnmatch
 import json
 from pathlib import Path
-from typing import Any, Iterator
+from typing import Any, Iterator, Sequence
 
 from test_generators import generate_test_input
 
@@ -99,5 +100,18 @@ def values_equal(actual: Any, expected: Any, tolerance: float | None) -> bool:
     return actual == expected
 
 
-def test_cases(specification: dict[str, Any]) -> Iterator[dict[str, Any]]:
-    yield from specification.get("tests", [])
+def test_cases(
+    specification: dict[str, Any],
+    patterns: Sequence[str] = (),
+    generated_only: bool = False,
+) -> Iterator[dict[str, Any]]:
+    """Yield cases selected by name glob and generator presence."""
+    for test in specification.get("tests", []):
+        if patterns and not any(
+            fnmatch.fnmatchcase(str(test.get("name", "")), pattern)
+            for pattern in patterns
+        ):
+            continue
+        if generated_only and not (test.get("generators") or test.get("generate")):
+            continue
+        yield test
