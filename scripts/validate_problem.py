@@ -18,7 +18,7 @@ from repository import (
     problem_directories,
 )
 
-from scripts.test_generators import (
+from .test_generators import (
     RANDOM_GENERATOR_TYPES,
     GeneratorError,
     validate_generator_config,
