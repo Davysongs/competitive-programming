@@ -74,10 +74,18 @@ def materialize_test(test: dict[str, Any]) -> tuple[dict[str, Any], Any]:
         specification = expected["$map_input"]
         values = specification["values"]
         expected = [values[str(item)] for item in input_data[specification["field"]]]
+    elif isinstance(expected, dict) and "$copy_input" in expected:
+        specification = expected["$copy_input"]
+        expected = copy.deepcopy(input_data[specification["field"]])
     return input_data, expected
 
 
-def values_equal(actual: Any, expected: Any, tolerance: float | None) -> bool:
+def values_equal(
+    actual: Any,
+    expected: Any,
+    tolerance: float | None,
+    unordered: bool = False,
+) -> bool:
     actual_is_number = isinstance(actual, (int, float)) and not isinstance(actual, bool)
     expected_is_number = isinstance(expected, (int, float)) and not isinstance(
         expected, bool
@@ -89,13 +97,26 @@ def values_equal(actual: Any, expected: Any, tolerance: float | None) -> bool:
     if type(actual) is not type(expected):
         return False
     if isinstance(actual, list):
-        return len(actual) == len(expected) and all(
-            values_equal(left, right, tolerance)
+        if len(actual) != len(expected):
+            return False
+        if unordered:
+            try:
+                sorted_actual = sorted(actual)
+                sorted_expected = sorted(expected)
+                return all(
+                    values_equal(left, right, tolerance, unordered=False)
+                    for left, right in zip(sorted_actual, sorted_expected)
+                )
+            except TypeError:
+                pass
+        return all(
+            values_equal(left, right, tolerance, unordered)
             for left, right in zip(actual, expected)
         )
     if isinstance(actual, dict):
         return actual.keys() == expected.keys() and all(
-            values_equal(actual[key], expected[key], tolerance) for key in actual
+            values_equal(actual[key], expected[key], tolerance, unordered)
+            for key in actual
         )
     return actual == expected
 
