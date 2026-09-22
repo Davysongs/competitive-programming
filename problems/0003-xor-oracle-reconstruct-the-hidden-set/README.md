@@ -187,4 +187,4 @@ Interaction trace:
 
 | Language | Implementation |
 | --- | --- |
-| Python | [`solution.py`](solutions/python/solution.py) |
+| Python | [`solution.py`](solutions/python/solution.py)
