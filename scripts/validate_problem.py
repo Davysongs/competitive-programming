@@ -36,7 +36,7 @@ REQUIRED_HEADINGS = (
     "## Complexity",
     "## Implementations",
 )
-SUPPORTED_COMPARISONS = {"exact", "float_tolerance"}
+SUPPORTED_COMPARISONS = {"exact", "float_tolerance", "unordered"}
 MAX_INLINE_INPUT_BYTES = 4_096
 
 
@@ -179,6 +179,12 @@ def validate_bundle(problem: Path) -> list[str]:
                 mapping.get("values"), dict
             ):
                 errors.append(f"{location} $map_input requires field and values")
+        elif isinstance(expected, dict) and "$copy_input" in expected:
+            copying = expected["$copy_input"]
+            if not isinstance(copying, dict):
+                errors.append(f"{location} $copy_input must be an object")
+            elif not isinstance(copying.get("field"), str) or not copying["field"]:
+                errors.append(f"{location} $copy_input requires a non-empty string field")
         override = test.get("comparison_override")
         if override is not None and override not in SUPPORTED_COMPARISONS:
             errors.append(f"{location} has unsupported comparison_override {override!r}")

@@ -124,6 +124,25 @@ class RepositoryToolTests(unittest.TestCase):
             ["stress_random", "stress_periodic"],
         )
 
+    def test_copy_input_materialization(self) -> None:
+        test = {
+            "input": {"items": [1, 2, 3]},
+            "expected_output": {
+                "$copy_input": {
+                    "field": "items",
+                }
+            },
+        }
+        input_data, expected = materialize_test(test)
+        self.assertEqual(expected, [1, 2, 3])
+        self.assertIsNot(input_data["items"], expected)
+
+    def test_unordered_values_equal(self) -> None:
+        self.assertTrue(values_equal([2, 1, 3], [1, 2, 3], None, unordered=True))
+        self.assertFalse(values_equal([2, 1, 3], [1, 2, 3], None, unordered=False))
+        self.assertFalse(values_equal([1, 2], [1, 2, 3], None, unordered=True))
+
 
 if __name__ == "__main__":
     unittest.main()
+
