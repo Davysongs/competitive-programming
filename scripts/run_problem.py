@@ -60,7 +60,7 @@ def command_for(
 
 def comparison_tolerance(specification: dict[str, Any], test: dict[str, Any]) -> float | None:
     comparison = test.get("comparison_override", specification.get("comparison", "exact"))
-    if comparison == "exact":
+    if comparison in ("exact", "unordered"):
         return None
     if comparison == "float_tolerance":
         return float(test.get("float_tolerance", specification.get("float_tolerance", 0)))
@@ -72,6 +72,100 @@ def concise(value: Any, limit: int = 500) -> str:
     if len(representation) <= limit:
         return representation
     return representation[:limit] + f"... <{len(representation) - limit} characters omitted>"
+
+
+def _run_interactive_test(
+    run_command: list[str],
+    input_data: dict[str, Any],
+    expected: Any,
+    specification: dict[str, Any],
+    test: dict[str, Any],
+    timeout_seconds: float,
+) -> tuple[bool, str]:
+    hidden = input_data.get("a")
+    if hidden is None and isinstance(input_data.get("hidden_state"), dict):
+        hidden = input_data["hidden_state"].get("a")
+    if not isinstance(hidden, list):
+        return False, "interactive test requires hidden list 'a'"
+
+    n = input_data.get("n", len(hidden))
+    max_queries = test.get("max_queries", 13000)
+
+    try:
+        process = subprocess.Popen(
+            run_command,
+            stdin=subprocess.PIPE,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            text=True,
+        )
+    except OSError as error:
+        return False, f"failed to execute command: {error}"
+
+    try:
+        if process.stdin is None or process.stdout is None:
+            return False, "failed to attach standard I/O streams"
+
+        process.stdin.write(json.dumps({"n": n}) + "\n")
+        process.stdin.flush()
+
+        query_count = 0
+        actual: Any = None
+
+        while True:
+            line = process.stdout.readline()
+            if not line:
+                break
+            line = line.strip()
+            if not line:
+                continue
+            try:
+                message = json.loads(line)
+            except json.JSONDecodeError as error:
+                process.kill()
+                return False, f"invalid JSON from solution: {error}"
+
+            msg_type = message.get("type")
+            if msg_type == "query":
+                query_count += 1
+                if query_count > max_queries:
+                    process.kill()
+                    return False, f"query limit exceeded: {query_count} > {max_queries}"
+                x = message.get("x")
+                if not isinstance(x, int) or isinstance(x, bool) or not (0 <= x < (1 << 30)):
+                    process.kill()
+                    return False, f"invalid query parameter x: {x!r}"
+                response_val = max(y ^ x for y in hidden)
+                process.stdin.write(json.dumps({"res": response_val}) + "\n")
+                process.stdin.flush()
+            elif msg_type == "answer":
+                actual = message.get("value")
+                break
+            else:
+                process.kill()
+                return False, f"unknown message type: {msg_type!r}"
+
+        stdout, stderr = process.communicate(timeout=timeout_seconds)
+        if process.returncode != 0:
+            detail = stderr.strip() or f"exit code {process.returncode}"
+            return False, f"solution exited with error: {detail}"
+
+        if actual is None:
+            return False, "solution terminated without answer"
+
+        tolerance = comparison_tolerance(specification, test)
+        comparison = test.get("comparison_override") or specification.get("comparison", "exact")
+        is_unordered = comparison == "unordered"
+        if not values_equal(actual, expected, tolerance, unordered=is_unordered):
+            return False, f"expected {concise(expected)}, received {concise(actual)}"
+
+        return True, ""
+    except subprocess.TimeoutExpired:
+        process.kill()
+        return False, f"timed out after {timeout_seconds}s"
+    except Exception as error:
+        process.kill()
+        return False, f"interactive error: {error}"
 
 
 def run_language(
@@ -106,35 +200,52 @@ def run_language(
                 detail = (build.stderr or build.stdout).strip()
                 return 0, len(cases), [f"build failed: {detail}"]
 
+        is_interactive = specification.get("io_mode") == "interactive"
         passed = 0
         for test in cases:
             name = str(test.get("name", "unnamed"))
             try:
                 input_data, expected = materialize_test(test)
-                execution = subprocess.run(
-                    run_command,
-                    input=json.dumps(input_data, separators=(",", ":")),
-                    capture_output=True,
-                    text=True,
-                    check=False,
-                    timeout=timeout_seconds,
-                )
-                if execution.returncode != 0:
-                    detail = execution.stderr.strip() or f"exit code {execution.returncode}"
-                    failures.append(f"{name}: execution failed: {detail}")
-                    continue
-                try:
-                    actual: Any = json.loads(execution.stdout)
-                except json.JSONDecodeError as error:
-                    failures.append(f"{name}: invalid JSON output: {error}")
-                    continue
-                tolerance = comparison_tolerance(specification, test)
-                if not values_equal(actual, expected, tolerance):
-                    failures.append(
-                        f"{name}: expected {concise(expected)}, received {concise(actual)}"
+                if is_interactive:
+                    success, error_detail = _run_interactive_test(
+                        run_command,
+                        input_data,
+                        expected,
+                        specification,
+                        test,
+                        timeout_seconds,
                     )
-                    continue
-                passed += 1
+                    if not success:
+                        failures.append(f"{name}: {error_detail}")
+                        continue
+                    passed += 1
+                else:
+                    execution = subprocess.run(
+                        run_command,
+                        input=json.dumps(input_data, separators=(",", ":")),
+                        capture_output=True,
+                        text=True,
+                        check=False,
+                        timeout=timeout_seconds,
+                    )
+                    if execution.returncode != 0:
+                        detail = execution.stderr.strip() or f"exit code {execution.returncode}"
+                        failures.append(f"{name}: execution failed: {detail}")
+                        continue
+                    try:
+                        actual: Any = json.loads(execution.stdout)
+                    except json.JSONDecodeError as error:
+                        failures.append(f"{name}: invalid JSON output: {error}")
+                        continue
+                    tolerance = comparison_tolerance(specification, test)
+                    comparison = test.get("comparison_override") or specification.get("comparison", "exact")
+                    is_unordered = comparison == "unordered"
+                    if not values_equal(actual, expected, tolerance, unordered=is_unordered):
+                        failures.append(
+                            f"{name}: expected {concise(expected)}, received {concise(actual)}"
+                        )
+                        continue
+                    passed += 1
             except (KeyError, TypeError, ValueError, subprocess.TimeoutExpired) as error:
                 failures.append(f"{name}: {error}")
     return passed, len(cases), failures
