@@ -1301,7 +1301,7 @@
     },
     {
       "name": "adversarial_chain_trie_fixed",
-      "description": "Adversarial: 31 chain elements (42 and 42 XOR 2^k for k=0..29) plus 369 fillers in [2^29, 2^29+368]. Total N=400. Element 42 is deep in the trie. Note: 42 XOR 2^29 = 536870954 falls in filler range, so it is not double-counted.",
+      "description": "Adversarial: 31 chain elements (42 and 42 XOR 2^k for k=0..29) plus 370 fillers in [2^29, 2^29+369]. Total N=400. Element 42 is deep in the trie. Note: 42 XOR 2^29 = 536870954 falls in filler range, so it is not double-counted.",
       "input": {
         "n": 400,
         "a": [
@@ -1703,7 +1703,8 @@
           536871277,
           536871278,
           536871279,
-          536871280
+          536871280,
+          536871281
         ]
       },
       "expected_output": [
@@ -2105,7 +2106,8 @@
         536871277,
         536871278,
         536871279,
-        536871280
+        536871280,
+        536871281
       ],
       "max_queries": 13000
     },
@@ -4883,7 +4885,7 @@
     },
     {
       "name": "adversarial_chain_trie_v2",
-      "description": "Adversarial: 31 chain elements (42 XOR 2^k for k=0..29, plus 42 itself) form a depth-30 chain. 369 filler elements in [2^29, 2^29+369) pad to N=400. Random-query approaches cannot find element 42.",
+      "description": "Adversarial: 31 chain elements (42 XOR 2^k for k=0..29, plus 42 itself) form a depth-30 chain. 370 filler elements in [2^29, 2^29+370) pad to N=400. Random-query approaches cannot find element 42.",
       "input": {
         "n": 400,
         "a": [
@@ -5285,7 +5287,8 @@
           536871277,
           536871278,
           536871279,
-          536871280
+          536871280,
+          536871281
         ]
       },
       "expected_output": [
@@ -5687,7 +5690,8 @@
         536871277,
         536871278,
         536871279,
-        536871280
+        536871280,
+        536871281
       ],
       "max_queries": 13000
     }
