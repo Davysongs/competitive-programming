@@ -100,15 +100,17 @@ def values_equal(
         if len(actual) != len(expected):
             return False
         if unordered:
-            try:
-                sorted_actual = sorted(actual)
-                sorted_expected = sorted(expected)
-                return all(
-                    values_equal(left, right, tolerance, unordered=False)
-                    for left, right in zip(sorted_actual, sorted_expected)
-                )
-            except TypeError:
-                pass
+            unmatched = list(range(len(actual)))
+            for exp_item in expected:
+                matched_index = None
+                for idx in unmatched:
+                    if values_equal(actual[idx], exp_item, tolerance, unordered=True):
+                        matched_index = idx
+                        break
+                if matched_index is None:
+                    return False
+                unmatched.remove(matched_index)
+            return True
         return all(
             values_equal(left, right, tolerance, unordered)
             for left, right in zip(actual, expected)

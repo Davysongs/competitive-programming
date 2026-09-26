@@ -141,6 +141,18 @@ class RepositoryToolTests(unittest.TestCase):
         self.assertTrue(values_equal([2, 1, 3], [1, 2, 3], None, unordered=True))
         self.assertFalse(values_equal([2, 1, 3], [1, 2, 3], None, unordered=False))
         self.assertFalse(values_equal([1, 2], [1, 2, 3], None, unordered=True))
+        self.assertTrue(
+            values_equal([{"x": 2}, {"x": 1}], [{"x": 1}, {"x": 2}], None, unordered=True)
+        )
+        self.assertTrue(
+            values_equal([[2, 1], [4, 3]], [[1, 2], [3, 4]], None, unordered=True)
+        )
+        self.assertFalse(
+            values_equal([1, 1, 2], [1, 2, 2], None, unordered=True)
+        )
+        self.assertTrue(
+            values_equal([1.0001, 2.0], [2.0001, 1.0], 0.001, unordered=True)
+        )
 
 
 if __name__ == "__main__":
