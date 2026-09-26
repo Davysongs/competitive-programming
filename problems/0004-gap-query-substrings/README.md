@@ -1,7 +1,7 @@
 # Gap-Query Substrings
 
-**Difficulty:** Easy  
-**Category:** String, Algorithmic Paradigms  
+**Difficulty:** Easy
+**Category:** String, Algorithmic Paradigms
 **Tags:** `suffix-structures`, `sorting`
 
 ## Problem
@@ -136,24 +136,24 @@ Repeated substrings are `"a"` ($L=1, d=2$), `"b"` ($L=1, d=2$), `"ab"` ($L=2, d=
 
 ## Approach
 
-1. **Equivalence Classes and Suffix Automaton**:  
+1. **Equivalence Classes and Suffix Automaton**:
    Every distinct substring of $s$ corresponds to a unique state in the Suffix Automaton (SAM) of $s$. A SAM state $v$ represents an equivalence class of substrings that share identical end-position sets (`endpos`).
    The lengths of substrings in state $v$ form a contiguous interval $[\text{len}(\text{link}(v)) + 1, \text{len}(v)]$.
 
-2. **End-Position Spread**:  
+2. **End-Position Spread**:
    For any substring with occurrences ending at $r_1 < r_2 < \dots < r_k$, the existence of two occurrences separated by at least $g$ characters ($l_2 \ge r_1 + 1 + g$) is maximized by picking the earliest occurrence $r_{\min}$ and the latest occurrence $r_{\max}$.
    The condition simplifies to:
    $$r_{\max} - r_{\min} \ge L + g \iff L \le (r_{\max} - r_{\min}) - g$$
    Since all substrings in state $v$ share the exact same set of end positions, they all share the exact same spread $d(v) = \max(\text{endpos}(v)) - \min(\text{endpos}(v))$.
 
-3. **Bottom-Up Propagation on the Link Tree**:  
+3. **Bottom-Up Propagation on the Link Tree**:
    - Direct occurrences of prefixes are marked during SAM construction: state $v$ corresponding to prefix $s[1..i]$ starts with $\min(v) = \max(v) = i$. Cloned states start with no direct occurrences.
    - States are sorted descending by length (topological order from leaves to root in the suffix link tree).
    - For each state $v$ with suffix link $p = \text{link}(v)$, update:
      $$\min(p) = \min(\min(p), \min(v))$$
      $$\max(p) = \max(\max(p), \max(v))$$
 
-4. **Answering Queries**:  
+4. **Answering Queries**:
    For a state $v$ with length range $[\text{lo}, \text{hi}]$ and spread $d$, a length $L \in [\text{lo}, \text{hi}]$ is $g$-good if and only if $L \le d - g$.
    The number of qualifying substrings from state $v$ is:
    $$\max(0, \min(\text{hi}, d - g) - \text{lo} + 1)$$
