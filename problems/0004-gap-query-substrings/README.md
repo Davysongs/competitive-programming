@@ -165,9 +165,9 @@ Let $n = |s|$ and $Q = |\text{queries}|$. The alphabet size is $|\Sigma| = 26$.
 
 - **Time Complexity:**
   - Suffix Automaton construction: $O(n \cdot |\Sigma|)$.
-  - End-position propagation: $O(n)$ using radix/length sorting.
-  - Query processing: $O(Q \cdot n)$ since there are at most $2n - 1$ states in the automaton.
-  - Total Time: $O(n \cdot |\Sigma| + Q \cdot n)$. With $n \le 200{,}000$ and $Q \le 10$, this finishes well within the 5000ms time limit.
+  - End-position propagation: O(n log n) because states are ordered with comparison sorting.
+  - Query processing: O(Q \cdot n) since there are at most 2n - 1 states in the automaton.
+  - Total Time: O(n log n + Q \cdot n). With n \le 200{,}000 and Q \le 10, this finishes well within the 5000ms time limit.
 
 - **Space Complexity:**
   - $O(n \cdot |\Sigma|)$ to store the suffix automaton transitions, links, and length intervals.
