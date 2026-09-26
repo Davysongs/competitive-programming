@@ -168,26 +168,6 @@ def validate_bundle(problem: Path) -> list[str]:
                 f"{location} input exceeds {MAX_INLINE_INPUT_BYTES} inline bytes; "
                 "replace large fields with generators"
             )
-        if "expected_output" not in test:
-            errors.append(f"{location} is missing expected_output")
-        expected = test.get("expected_output")
-        if isinstance(expected, dict) and "$map_input" in expected:
-            mapping = expected["$map_input"]
-            if not isinstance(mapping, dict):
-                errors.append(f"{location} $map_input must be an object")
-            elif not isinstance(mapping.get("field"), str) or not isinstance(
-                mapping.get("values"), dict
-            ):
-                errors.append(f"{location} $map_input requires field and values")
-        elif isinstance(expected, dict) and "$copy_input" in expected:
-            copying = expected["$copy_input"]
-            if not isinstance(copying, dict):
-                errors.append(f"{location} $copy_input must be an object")
-            elif not isinstance(copying.get("field"), str) or not copying["field"]:
-                errors.append(f"{location} $copy_input requires a non-empty string field")
-        override = test.get("comparison_override")
-        if override is not None and override not in SUPPORTED_COMPARISONS:
-            errors.append(f"{location} has unsupported comparison_override {override!r}")
         generators = test.get("generators", [])
         if generators and not isinstance(generators, list):
             errors.append(f"{location}.generators must be an array")
@@ -227,6 +207,30 @@ def validate_bundle(problem: Path) -> list[str]:
                 f"{location} keeps generated fields inline: "
                 + ", ".join(duplicated_inline_fields)
             )
+        if "expected_output" not in test:
+            errors.append(f"{location} is missing expected_output")
+        expected = test.get("expected_output")
+        if isinstance(expected, dict) and "$map_input" in expected:
+            mapping = expected["$map_input"]
+            if not isinstance(mapping, dict):
+                errors.append(f"{location} $map_input must be an object")
+            elif not isinstance(mapping.get("field"), str) or not isinstance(
+                mapping.get("values"), dict
+            ):
+                errors.append(f"{location} $map_input requires field and values")
+        elif isinstance(expected, dict) and "$copy_input" in expected:
+            copying = expected["$copy_input"]
+            if not isinstance(copying, dict):
+                errors.append(f"{location} $copy_input must be an object")
+            elif not isinstance(copying.get("field"), str) or not copying["field"]:
+                errors.append(f"{location} $copy_input requires a non-empty string field")
+            elif copying["field"] not in input_data and copying["field"] not in generator_fields:
+                errors.append(
+                    f"{location} $copy_input references unknown field {copying['field']!r}"
+                )
+        override = test.get("comparison_override")
+        if override is not None and override not in SUPPORTED_COMPARISONS:
+            errors.append(f"{location} has unsupported comparison_override {override!r}")
 
     try:
         readme = (problem / "README.md").read_text(encoding="utf-8")
