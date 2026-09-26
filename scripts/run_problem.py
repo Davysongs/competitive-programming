@@ -6,10 +6,13 @@ from __future__ import annotations
 import argparse
 import json
 import os
+import queue
 import shutil
 import subprocess
 import sys
 import tempfile
+import threading
+import time
 from pathlib import Path
 from typing import Any
 
@@ -74,6 +77,17 @@ def concise(value: Any, limit: int = 500) -> str:
     return representation[:limit] + f"... <{len(representation) - limit} characters omitted>"
 
 
+def _terminate_and_reap(process: subprocess.Popen[str]) -> None:
+    try:
+        process.kill()
+    except OSError:
+        pass
+    try:
+        process.wait(timeout=2.0)
+    except (subprocess.TimeoutExpired, OSError):
+        pass
+
+
 def _run_interactive_test(
     run_command: list[str],
     input_data: dict[str, Any],
@@ -85,8 +99,8 @@ def _run_interactive_test(
     hidden = input_data.get("a")
     if hidden is None and isinstance(input_data.get("hidden_state"), dict):
         hidden = input_data["hidden_state"].get("a")
-    if not isinstance(hidden, list):
-        return False, "interactive test requires hidden list 'a'"
+    if not isinstance(hidden, list) or not hidden:
+        return False, "interactive test requires non-empty hidden list 'a'"
 
     n = input_data.get("n", len(hidden))
     max_queries = test.get("max_queries", 13000)
@@ -104,7 +118,48 @@ def _run_interactive_test(
 
     try:
         if process.stdin is None or process.stdout is None:
+            _terminate_and_reap(process)
             return False, "failed to attach standard I/O streams"
+
+        deadline = time.monotonic() + timeout_seconds
+
+        line_queue: queue.Queue[str | None] = queue.Queue()
+
+        def _drain_stdout() -> None:
+            try:
+                if process.stdout is not None:
+                    for line in iter(process.stdout.readline, ""):
+                        line_queue.put(line)
+            except Exception:
+                pass
+            finally:
+                line_queue.put(None)
+
+        stdout_thread = threading.Thread(target=_drain_stdout, daemon=True)
+        stdout_thread.start()
+
+        stderr_lines: list[str] = []
+
+        def _drain_stderr() -> None:
+            try:
+                if process.stderr is not None:
+                    for line in iter(process.stderr.readline, ""):
+                        stderr_lines.append(line)
+            except Exception:
+                pass
+
+        stderr_thread = threading.Thread(target=_drain_stderr, daemon=True)
+        stderr_thread.start()
+
+        def _read_line() -> tuple[bool, str | None]:
+            remaining = deadline - time.monotonic()
+            if remaining <= 0:
+                return False, None
+            try:
+                item = line_queue.get(timeout=remaining)
+                return True, item
+            except queue.Empty:
+                return False, None
 
         process.stdin.write(json.dumps({"n": n}) + "\n")
         process.stdin.flush()
@@ -113,8 +168,11 @@ def _run_interactive_test(
         actual: Any = None
 
         while True:
-            line = process.stdout.readline()
-            if not line:
+            ok, line = _read_line()
+            if not ok:
+                _terminate_and_reap(process)
+                return False, f"timed out after {timeout_seconds}s"
+            if line is None:
                 break
             line = line.strip()
             if not line:
@@ -122,19 +180,22 @@ def _run_interactive_test(
             try:
                 message = json.loads(line)
             except json.JSONDecodeError as error:
-                process.kill()
+                _terminate_and_reap(process)
                 return False, f"invalid JSON from solution: {error}"
 
             msg_type = message.get("type")
             if msg_type == "query":
                 query_count += 1
                 if query_count > max_queries:
-                    process.kill()
+                    _terminate_and_reap(process)
                     return False, f"query limit exceeded: {query_count} > {max_queries}"
                 x = message.get("x")
                 if not isinstance(x, int) or isinstance(x, bool) or not (0 <= x < (1 << 30)):
-                    process.kill()
+                    _terminate_and_reap(process)
                     return False, f"invalid query parameter x: {x!r}"
+                if not hidden:
+                    _terminate_and_reap(process)
+                    return False, "interactive test requires non-empty hidden list 'a'"
                 response_val = max(y ^ x for y in hidden)
                 process.stdin.write(json.dumps({"res": response_val}) + "\n")
                 process.stdin.flush()
@@ -142,16 +203,26 @@ def _run_interactive_test(
                 actual = message.get("value")
                 break
             else:
-                process.kill()
+                _terminate_and_reap(process)
                 return False, f"unknown message type: {msg_type!r}"
 
-        stdout, stderr = process.communicate(timeout=timeout_seconds)
-        if process.returncode != 0:
-            detail = stderr.strip() or f"exit code {process.returncode}"
-            return False, f"solution exited with error: {detail}"
-
         if actual is None:
+            _terminate_and_reap(process)
             return False, "solution terminated without answer"
+
+        try:
+            if process.stdin is not None and not process.stdin.closed:
+                process.stdin.close()
+        except OSError:
+            pass
+
+        remaining = max(0.0, deadline - time.monotonic())
+        stdout, stderr = process.communicate(timeout=remaining)
+        stderr_thread.join(timeout=1.0)
+        all_stderr = "".join(stderr_lines).strip() or (stderr.strip() if stderr else "")
+        if process.returncode != 0:
+            detail = all_stderr or f"exit code {process.returncode}"
+            return False, f"solution exited with error: {detail}"
 
         tolerance = comparison_tolerance(specification, test)
         comparison = test.get("comparison_override") or specification.get("comparison", "exact")
@@ -161,10 +232,10 @@ def _run_interactive_test(
 
         return True, ""
     except subprocess.TimeoutExpired:
-        process.kill()
+        _terminate_and_reap(process)
         return False, f"timed out after {timeout_seconds}s"
     except Exception as error:
-        process.kill()
+        _terminate_and_reap(process)
         return False, f"interactive error: {error}"
 
 
