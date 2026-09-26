@@ -1,0 +1,26 @@
+{
+  "id": "0003",
+  "legacy_id": "rec6f6we1gyrgskvg",
+  "slug": "xor-oracle-reconstruct-the-hidden-set",
+  "title": "XOR Oracle: Reconstruct the Hidden Set",
+  "difficulty": "Easy",
+  "category": [
+    "Algorithmic Paradigms",
+    "String"
+  ],
+  "tags": [
+    "interactive",
+    "bitmasking",
+    "trie"
+  ],
+  "cognitive_focus": "Observation",
+  "resource_limits": {
+    "time_ms": 5000,
+    "memory_mb": 256
+  },
+  "io_mode": "interactive",
+  "available_languages": [
+    "python"
+  ],
+  "status": "verified"
+}

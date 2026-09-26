@@ -139,6 +139,48 @@ class ProblemValidatorTests(unittest.TestCase):
         )
         self.assertTrue(any("requires a non-empty 'type'" in error for error in errors))
 
+    def test_copy_input_unknown_field_is_rejected(self) -> None:
+        errors = self.validate_test(
+            {
+                "name": "example1",
+                "input": {"x": 1},
+                "expected_output": {
+                    "$copy_input": {
+                        "field": "missing_field",
+                    }
+                },
+            }
+        )
+        self.assertTrue(
+            any("$copy_input references unknown field 'missing_field'" in error for error in errors)
+        )
+
+    def test_copy_input_generator_field_is_accepted(self) -> None:
+        errors = self.validate_test(
+            {
+                "name": "example1",
+                "input": {},
+                "expected_output": {
+                    "$copy_input": {
+                        "field": "gen_field",
+                    }
+                },
+                "generators": [
+                    {
+                        "type": "random_array",
+                        "field": "gen_field",
+                        "seed": 42,
+                        "n": 5,
+                        "min": 0,
+                        "max": 10,
+                    }
+                ],
+            }
+        )
+        self.assertFalse(
+            any("$copy_input references unknown field" in error for error in errors)
+        )
+
 
 if __name__ == "__main__":
     unittest.main()
