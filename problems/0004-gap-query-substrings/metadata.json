@@ -1,0 +1,25 @@
+{
+  "id": "0004",
+  "legacy_id": "recd9147xsvfzscig",
+  "slug": "gap-query-substrings",
+  "title": "Gap-Query Substrings",
+  "difficulty": "Easy",
+  "category": [
+    "String",
+    "Algorithmic Paradigms"
+  ],
+  "tags": [
+    "suffix-structures",
+    "sorting"
+  ],
+  "cognitive_focus": "Logic",
+  "resource_limits": {
+    "time_ms": 5000,
+    "memory_mb": 256
+  },
+  "io_mode": "json-stdio",
+  "available_languages": [
+    "python"
+  ],
+  "status": "verified"
+}
