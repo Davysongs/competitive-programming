@@ -52,6 +52,7 @@ reference solution at runtime to manufacture the expectation.
 | `random_permutation` | `seed`, `n` | `zero_indexed` |
 | `random_matrix` | `seed`, `rows`, `cols` | `min`, `max` |
 | `random_tree` | `seed`, `n` | `weighted`, weight bounds, `one_indexed` |
+| `linear_chain` | `n` | `one_indexed` |
 | `random_intervals` | `seed`, `n` | Bounds, `strict`, `non_overlapping`, `sorted` |
 | `random_packets` | `seed`, `n` | Duration/probability bounds and `q_decimals` |
 

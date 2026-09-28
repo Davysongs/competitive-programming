@@ -1,0 +1,2866 @@
+{
+  "io_mode": "json-stdio",
+  "comparison": "exact",
+  "float_tolerance": 0,
+  "tests": [
+    {
+      "name": "example1",
+      "description": "Star graph: root with two children, high beta children",
+      "input": {
+        "N": 3,
+        "alpha": [
+          10,
+          10,
+          10
+        ],
+        "beta": [
+          1,
+          100,
+          100
+        ],
+        "edges": [
+          [
+            1,
+            2
+          ],
+          [
+            1,
+            3
+          ]
+        ]
+      },
+      "expected_output": 3000
+    },
+    {
+      "name": "example2",
+      "description": "Linear chain: forced sequence",
+      "input": {
+        "N": 3,
+        "alpha": [
+          100,
+          1,
+          1
+        ],
+        "beta": [
+          1,
+          100,
+          100
+        ],
+        "edges": [
+          [
+            1,
+            2
+          ],
+          [
+            2,
+            3
+          ]
+        ]
+      },
+      "expected_output": 20100
+    },
+    {
+      "name": "example3",
+      "description": "Tree with branch: optimal ordering matters",
+      "input": {
+        "N": 4,
+        "alpha": [
+          10,
+          20,
+          20,
+          20
+        ],
+        "beta": [
+          1,
+          100,
+          100,
+          1
+        ],
+        "edges": [
+          [
+            1,
+            2
+          ],
+          [
+            1,
+            3
+          ],
+          [
+            3,
+            4
+          ]
+        ]
+      },
+      "expected_output": 4050
+    },
+    {
+      "name": "single_node",
+      "description": "Edge case: single isotope (root only)",
+      "input": {
+        "N": 1,
+        "alpha": [
+          100
+        ],
+        "beta": [
+          50
+        ],
+        "edges": []
+      },
+      "expected_output": 0
+    },
+    {
+      "name": "two_nodes",
+      "description": "Edge case: simple parent-child pair",
+      "input": {
+        "N": 2,
+        "alpha": [
+          100,
+          1
+        ],
+        "beta": [
+          1,
+          100
+        ],
+        "edges": [
+          [
+            1,
+            2
+          ]
+        ]
+      },
+      "expected_output": 10000
+    },
+    {
+      "name": "reverse_priority",
+      "description": "Parent low beta, child high beta",
+      "input": {
+        "N": 2,
+        "alpha": [
+          50,
+          50
+        ],
+        "beta": [
+          1,
+          1000
+        ],
+        "edges": [
+          [
+            1,
+            2
+          ]
+        ]
+      },
+      "expected_output": 50000
+    },
+    {
+      "name": "equal_ratios",
+      "description": "Nodes with same beta/alpha ratio",
+      "input": {
+        "N": 4,
+        "alpha": [
+          10,
+          20,
+          30,
+          40
+        ],
+        "beta": [
+          5,
+          10,
+          15,
+          20
+        ],
+        "edges": [
+          [
+            1,
+            2
+          ],
+          [
+            1,
+            3
+          ],
+          [
+            1,
+            4
+          ]
+        ]
+      },
+      "expected_output": 1750
+    },
+    {
+      "name": "deep_chain",
+      "description": "Deep linear chain to test performance",
+      "input": {
+        "N": 5,
+        "alpha": [
+          1,
+          1,
+          1,
+          1,
+          1
+        ],
+        "beta": [
+          1,
+          2,
+          3,
+          4,
+          5
+        ],
+        "edges": [
+          [
+            1,
+            2
+          ],
+          [
+            2,
+            3
+          ],
+          [
+            3,
+            4
+          ],
+          [
+            4,
+            5
+          ]
+        ]
+      },
+      "expected_output": 40
+    },
+    {
+      "name": "star_graph",
+      "description": "Root with multiple children, varying priorities",
+      "input": {
+        "N": 5,
+        "alpha": [
+          10,
+          5,
+          5,
+          5,
+          5
+        ],
+        "beta": [
+          1,
+          100,
+          80,
+          60,
+          40
+        ],
+        "edges": [
+          [
+            1,
+            2
+          ],
+          [
+            1,
+            3
+          ],
+          [
+            1,
+            4
+          ],
+          [
+            1,
+            5
+          ]
+        ]
+      },
+      "expected_output": 4400
+    },
+    {
+      "name": "heavy_descendant",
+      "description": "Test case with heavy descendant alpha - sibling ordering matters",
+      "input": {
+        "N": 4,
+        "alpha": [
+          1,
+          2,
+          3,
+          100000
+        ],
+        "beta": [
+          1,
+          1,
+          1,
+          1
+        ],
+        "edges": [
+          [
+            1,
+            2
+          ],
+          [
+            1,
+            3
+          ],
+          [
+            2,
+            4
+          ]
+        ]
+      },
+      "expected_output": 10
+    },
+    {
+      "name": "stale_priority_test",
+      "description": "Tests version-based stale entry detection and integer cross-multiplication",
+      "input": {
+        "N": 4,
+        "alpha": [
+          1,
+          1,
+          100,
+          1
+        ],
+        "beta": [
+          1,
+          100,
+          1,
+          50
+        ],
+        "edges": [
+          [
+            1,
+            2
+          ],
+          [
+            2,
+            3
+          ],
+          [
+            1,
+            4
+          ]
+        ]
+      },
+      "expected_output": 203
+    },
+    {
+      "name": "large_values",
+      "description": "Test with large alpha and beta values",
+      "input": {
+        "N": 3,
+        "alpha": [
+          1000000000,
+          1000000000,
+          1000000000
+        ],
+        "beta": [
+          1000000000,
+          1000000000,
+          1000000000
+        ],
+        "edges": [
+          [
+            1,
+            2
+          ],
+          [
+            1,
+            3
+          ]
+        ]
+      },
+      "expected_output": 3000000000000000000
+    },
+    {
+      "name": "big_integer_chain",
+      "description": "Chain with max alpha and beta to enforce big-integer handling (output > 9e18)",
+      "input": {
+        "N": 5,
+        "alpha": [
+          1000000000,
+          1000000000,
+          1000000000,
+          1000000000,
+          1000000000
+        ],
+        "beta": [
+          1000000000,
+          1000000000,
+          1000000000,
+          1000000000,
+          1000000000
+        ],
+        "edges": [
+          [
+            1,
+            2
+          ],
+          [
+            2,
+            3
+          ],
+          [
+            3,
+            4
+          ],
+          [
+            4,
+            5
+          ]
+        ]
+      },
+      "expected_output": 10000000000000000000
+    },
+    {
+      "name": "complex_tree",
+      "description": "Complex tree structure with multiple branches",
+      "input": {
+        "N": 7,
+        "alpha": [
+          10,
+          20,
+          30,
+          40,
+          50,
+          60,
+          70
+        ],
+        "beta": [
+          1,
+          100,
+          90,
+          80,
+          70,
+          60,
+          50
+        ],
+        "edges": [
+          [
+            1,
+            2
+          ],
+          [
+            1,
+            3
+          ],
+          [
+            2,
+            4
+          ],
+          [
+            2,
+            5
+          ],
+          [
+            3,
+            6
+          ],
+          [
+            3,
+            7
+          ]
+        ]
+      },
+      "expected_output": 35000
+    },
+    {
+      "name": "zigzag_priorities",
+      "description": "Alternating high/low priorities in a chain",
+      "input": {
+        "N": 6,
+        "alpha": [
+          10,
+          100,
+          10,
+          100,
+          10,
+          100
+        ],
+        "beta": [
+          1,
+          1,
+          100,
+          1,
+          100,
+          1
+        ],
+        "edges": [
+          [
+            1,
+            2
+          ],
+          [
+            2,
+            3
+          ],
+          [
+            3,
+            4
+          ],
+          [
+            4,
+            5
+          ],
+          [
+            5,
+            6
+          ]
+        ]
+      },
+      "expected_output": 33360
+    },
+    {
+      "name": "binary_tree_structure",
+      "description": "Binary tree with varying alpha/beta values",
+      "input": {
+        "N": 7,
+        "alpha": [
+          100,
+          50,
+          50,
+          25,
+          25,
+          25,
+          25
+        ],
+        "beta": [
+          1,
+          10,
+          5,
+          100,
+          80,
+          60,
+          40
+        ],
+        "edges": [
+          [
+            1,
+            2
+          ],
+          [
+            1,
+            3
+          ],
+          [
+            2,
+            4
+          ],
+          [
+            2,
+            5
+          ],
+          [
+            3,
+            6
+          ],
+          [
+            3,
+            7
+          ]
+        ]
+      },
+      "expected_output": 57000
+    },
+    {
+      "name": "deep_tree_varied",
+      "description": "Deep tree with varied alpha and beta at each level",
+      "input": {
+        "N": 10,
+        "alpha": [
+          10,
+          20,
+          30,
+          40,
+          50,
+          60,
+          70,
+          80,
+          90,
+          100
+        ],
+        "beta": [
+          1,
+          100,
+          90,
+          80,
+          70,
+          60,
+          50,
+          40,
+          30,
+          20
+        ],
+        "edges": [
+          [
+            1,
+            2
+          ],
+          [
+            1,
+            3
+          ],
+          [
+            2,
+            4
+          ],
+          [
+            2,
+            5
+          ],
+          [
+            3,
+            6
+          ],
+          [
+            3,
+            7
+          ],
+          [
+            4,
+            8
+          ],
+          [
+            5,
+            9
+          ],
+          [
+            6,
+            10
+          ]
+        ]
+      },
+      "expected_output": 66000
+    },
+    {
+      "name": "unbalanced_tree",
+      "description": "Highly unbalanced tree structure",
+      "input": {
+        "N": 8,
+        "alpha": [
+          100,
+          10,
+          20,
+          30,
+          5,
+          5,
+          5,
+          5
+        ],
+        "beta": [
+          1,
+          100,
+          50,
+          25,
+          200,
+          150,
+          100,
+          50
+        ],
+        "edges": [
+          [
+            1,
+            2
+          ],
+          [
+            2,
+            3
+          ],
+          [
+            3,
+            4
+          ],
+          [
+            1,
+            5
+          ],
+          [
+            1,
+            6
+          ],
+          [
+            1,
+            7
+          ],
+          [
+            1,
+            8
+          ]
+        ]
+      },
+      "expected_output": 74750
+    },
+    {
+      "name": "max_alpha_min_beta",
+      "description": "Test with maximum alpha (10^9) and minimum beta (1) values",
+      "input": {
+        "N": 4,
+        "alpha": [
+          1000000000,
+          1000000000,
+          1000000000,
+          1000000000
+        ],
+        "beta": [
+          1,
+          1,
+          1,
+          1
+        ],
+        "edges": [
+          [
+            1,
+            2
+          ],
+          [
+            1,
+            3
+          ],
+          [
+            2,
+            4
+          ]
+        ]
+      },
+      "expected_output": 6000000000
+    },
+    {
+      "name": "min_alpha_max_beta",
+      "description": "Test with minimum alpha (1) and maximum beta (10^9) values",
+      "input": {
+        "N": 4,
+        "alpha": [
+          1,
+          1,
+          1,
+          1
+        ],
+        "beta": [
+          1000000000,
+          1000000000,
+          1000000000,
+          1000000000
+        ],
+        "edges": [
+          [
+            1,
+            2
+          ],
+          [
+            1,
+            3
+          ],
+          [
+            2,
+            4
+          ]
+        ]
+      },
+      "expected_output": 6000000000
+    },
+    {
+      "name": "balanced_binary_tree_perfect",
+      "description": "Perfect balanced binary tree (15 nodes, 4 levels)",
+      "input": {
+        "N": 15,
+        "alpha": [
+          50,
+          40,
+          40,
+          30,
+          30,
+          30,
+          30,
+          20,
+          20,
+          20,
+          20,
+          20,
+          20,
+          20,
+          20
+        ],
+        "beta": [
+          1,
+          100,
+          100,
+          90,
+          90,
+          90,
+          90,
+          80,
+          80,
+          80,
+          80,
+          80,
+          80,
+          80,
+          80
+        ],
+        "edges": [
+          [
+            1,
+            2
+          ],
+          [
+            1,
+            3
+          ],
+          [
+            2,
+            4
+          ],
+          [
+            2,
+            5
+          ],
+          [
+            3,
+            6
+          ],
+          [
+            3,
+            7
+          ],
+          [
+            4,
+            8
+          ],
+          [
+            4,
+            9
+          ],
+          [
+            5,
+            10
+          ],
+          [
+            5,
+            11
+          ],
+          [
+            6,
+            12
+          ],
+          [
+            6,
+            13
+          ],
+          [
+            7,
+            14
+          ],
+          [
+            7,
+            15
+          ]
+        ]
+      },
+      "expected_output": 268600
+    },
+    {
+      "name": "single_node_max_values",
+      "description": "N=1 with maximum alpha and beta values",
+      "input": {
+        "N": 1,
+        "alpha": [
+          1000000000
+        ],
+        "beta": [
+          1000000000
+        ],
+        "edges": []
+      },
+      "expected_output": 0
+    },
+    {
+      "name": "single_node_min_values",
+      "description": "N=1 with minimum alpha and beta values",
+      "input": {
+        "N": 1,
+        "alpha": [
+          1
+        ],
+        "beta": [
+          1
+        ],
+        "edges": []
+      },
+      "expected_output": 0
+    },
+    {
+      "name": "mixed_extreme_boundaries",
+      "description": "Mixed extreme alpha and beta values in a tree",
+      "input": {
+        "N": 5,
+        "alpha": [
+          1000000000,
+          1,
+          1000000000,
+          1,
+          1000000000
+        ],
+        "beta": [
+          1,
+          1000000000,
+          1,
+          1000000000,
+          1
+        ],
+        "edges": [
+          [
+            1,
+            2
+          ],
+          [
+            1,
+            3
+          ],
+          [
+            2,
+            4
+          ],
+          [
+            2,
+            5
+          ]
+        ]
+      },
+      "expected_output": 2000000004000000004
+    },
+    {
+      "name": "subtree_priority_test",
+      "description": "Test where subtree with small beta but large descendant alpha should be processed last",
+      "input": {
+        "N": 5,
+        "alpha": [
+          1,
+          1,
+          1,
+          1,
+          1000
+        ],
+        "beta": [
+          1,
+          10,
+          10,
+          1,
+          1
+        ],
+        "edges": [
+          [
+            1,
+            2
+          ],
+          [
+            1,
+            3
+          ],
+          [
+            2,
+            4
+          ],
+          [
+            2,
+            5
+          ]
+        ]
+      },
+      "expected_output": 37
+    },
+    {
+      "name": "chain_with_heavy_tail",
+      "description": "Chain where last element has very large alpha",
+      "input": {
+        "N": 4,
+        "alpha": [
+          1,
+          1,
+          1,
+          1000000
+        ],
+        "beta": [
+          1,
+          1,
+          1,
+          1
+        ],
+        "edges": [
+          [
+            1,
+            2
+          ],
+          [
+            2,
+            3
+          ],
+          [
+            3,
+            4
+          ]
+        ]
+      },
+      "expected_output": 6
+    },
+    {
+      "name": "stress_1000_random",
+      "description": "Stress test: 1000 nodes with random alpha/beta values",
+      "input": {
+        "N": 1000
+      },
+      "generators": [
+        {
+          "type": "random_array",
+          "field": "alpha",
+          "seed": 12345,
+          "n": 1000,
+          "min": 1,
+          "max": 1000000000
+        },
+        {
+          "type": "random_array",
+          "field": "beta",
+          "seed": 54321,
+          "n": 1000,
+          "min": 1,
+          "max": 1000000000
+        },
+        {
+          "type": "random_tree",
+          "field": "edges",
+          "seed": 99999,
+          "n": 1000,
+          "one_indexed": true
+        }
+      ],
+      "base_test": "example1",
+      "expected_output": 79353697609183359696756
+    },
+    {
+      "name": "stress_10000_balanced",
+      "description": "Stress test: 10000 nodes balanced tree structure",
+      "input": {
+        "N": 10000
+      },
+      "generators": [
+        {
+          "type": "random_array",
+          "field": "alpha",
+          "seed": 42,
+          "n": 10000,
+          "min": 1,
+          "max": 1000000000
+        },
+        {
+          "type": "random_array",
+          "field": "beta",
+          "seed": 24,
+          "n": 10000,
+          "min": 1,
+          "max": 1000000000
+        },
+        {
+          "type": "random_tree",
+          "field": "edges",
+          "seed": 77777,
+          "n": 10000,
+          "one_indexed": true
+        }
+      ],
+      "base_test": "example1",
+      "expected_output": 8473870082844684597862317
+    },
+    {
+      "name": "stress_50000_mixed",
+      "description": "Stress test: 50000 nodes with mixed alpha/beta patterns",
+      "input": {
+        "N": 50000
+      },
+      "generators": [
+        {
+          "type": "random_array",
+          "field": "alpha",
+          "seed": 11111,
+          "n": 50000,
+          "min": 1,
+          "max": 1000000000
+        },
+        {
+          "type": "random_array",
+          "field": "beta",
+          "seed": 22222,
+          "n": 50000,
+          "min": 1,
+          "max": 1000000000
+        },
+        {
+          "type": "random_tree",
+          "field": "edges",
+          "seed": 33333,
+          "n": 50000,
+          "one_indexed": true
+        }
+      ],
+      "base_test": "example1",
+      "expected_output": 208865341914916021013113740
+    },
+    {
+      "name": "stress_200000_max_1",
+      "description": "Stress test: 200000 nodes (maximum constraint)",
+      "input": {
+        "N": 200000
+      },
+      "generators": [
+        {
+          "type": "random_array",
+          "field": "alpha",
+          "seed": 947,
+          "n": 200000,
+          "min": 1,
+          "max": 1000000000
+        },
+        {
+          "type": "random_array",
+          "field": "beta",
+          "seed": 948,
+          "n": 200000,
+          "min": 1,
+          "max": 1000000000
+        },
+        {
+          "type": "random_tree",
+          "field": "edges",
+          "seed": 949,
+          "n": 200000,
+          "one_indexed": true
+        }
+      ],
+      "base_test": "example1",
+      "expected_output": 3321220873368328576651253059
+    },
+    {
+      "name": "stress_200000_max_2",
+      "description": "Stress test: 200000 nodes (maximum constraint)",
+      "input": {
+        "N": 200000
+      },
+      "generators": [
+        {
+          "type": "random_array",
+          "field": "alpha",
+          "seed": 950,
+          "n": 200000,
+          "min": 1,
+          "max": 1000000000
+        },
+        {
+          "type": "random_array",
+          "field": "beta",
+          "seed": 951,
+          "n": 200000,
+          "min": 1,
+          "max": 1000000000
+        },
+        {
+          "type": "random_tree",
+          "field": "edges",
+          "seed": 952,
+          "n": 200000,
+          "one_indexed": true
+        }
+      ],
+      "base_test": "example1",
+      "expected_output": 3319421123798574437900364525
+    },
+    {
+      "name": "stress_200000_deep_chain",
+      "description": "Stress test: 200000-node linear chain (maximum depth, tests iterative DSU)",
+      "input": {
+        "N": 200000
+      },
+      "generators": [
+        {
+          "type": "random_array",
+          "field": "alpha",
+          "seed": 31337,
+          "n": 200000,
+          "min": 1,
+          "max": 1000000000
+        },
+        {
+          "type": "random_array",
+          "field": "beta",
+          "seed": 31338,
+          "n": 200000,
+          "min": 1,
+          "max": 1000000000
+        },
+        {
+          "type": "linear_chain",
+          "field": "edges",
+          "seed": 31339,
+          "n": 200000,
+          "one_indexed": true
+        }
+      ],
+      "base_test": "example1",
+      "expected_output": 4982895012644093748322476599
+    },
+    {
+      "name": "pitfall_beta_vs_ratio_star",
+      "description": "Star graph where sorting by beta alone differs from sorting by beta/alpha ratio. Node 2 has higher beta (100) but lower ratio (10 vs 50). From tutorial pitfall 1.",
+      "input": {
+        "N": 3,
+        "alpha": [
+          1,
+          10,
+          1
+        ],
+        "beta": [
+          1,
+          100,
+          50
+        ],
+        "edges": [
+          [
+            1,
+            2
+          ],
+          [
+            1,
+            3
+          ]
+        ]
+      },
+      "expected_output": 250
+    },
+    {
+      "name": "pitfall_individual_vs_cumulative_ratio",
+      "description": "Tutorial pitfall 3: Node 2 has individual ratio 2, node 3 has ratio 1, but subtree {3,4} has cumulative ratio 1001/2=500.5. Using individual ratios gives 3004, correct is 2007.",
+      "input": {
+        "N": 4,
+        "alpha": [
+          1,
+          1,
+          1,
+          1
+        ],
+        "beta": [
+          1,
+          2,
+          1,
+          1000
+        ],
+        "edges": [
+          [
+            1,
+            2
+          ],
+          [
+            1,
+            3
+          ],
+          [
+            3,
+            4
+          ]
+        ]
+      },
+      "expected_output": 2007
+    },
+    {
+      "name": "pitfall_cost_formula_swap",
+      "description": "Tutorial pitfall 5: Tests swapped cost formula. Correct: alpha_parent * beta_child = 10*100 = 1000. Swapped: alpha_child * beta_parent = 1*1 = 1. Asymmetric alpha/beta to catch this.",
+      "input": {
+        "N": 2,
+        "alpha": [
+          10,
+          1
+        ],
+        "beta": [
+          1,
+          100
+        ],
+        "edges": [
+          [
+            1,
+            2
+          ]
+        ]
+      },
+      "expected_output": 1000
+    },
+    {
+      "name": "pitfall_float_precision_ratios",
+      "description": "Tutorial pitfall 4: Nodes with nearly identical beta/alpha ratios that are indistinguishable as floats but differ by 1 in cross-multiplication. Requires integer comparison to order correctly.",
+      "input": {
+        "N": 5,
+        "alpha": [
+          1,
+          999999999,
+          1000000000,
+          1000000001,
+          1000000000
+        ],
+        "beta": [
+          1,
+          1000000000,
+          999999999,
+          1000000000,
+          999999999
+        ],
+        "edges": [
+          [
+            1,
+            2
+          ],
+          [
+            1,
+            3
+          ],
+          [
+            1,
+            4
+          ],
+          [
+            1,
+            5
+          ]
+        ]
+      },
+      "expected_output": 5999999997999999998
+    },
+    {
+      "name": "pitfall_deep_cumulative_propagation",
+      "description": "Two deep chains from root, each with a high-beta node buried deep. Tests that cumulative ratios propagate correctly through multiple merge steps, and stale entries don't interfere.",
+      "input": {
+        "N": 8,
+        "alpha": [
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1
+        ],
+        "beta": [
+          1,
+          1,
+          1,
+          1000000000,
+          1,
+          1,
+          1,
+          1000000000
+        ],
+        "edges": [
+          [
+            1,
+            2
+          ],
+          [
+            1,
+            3
+          ],
+          [
+            2,
+            4
+          ],
+          [
+            4,
+            5
+          ],
+          [
+            5,
+            6
+          ],
+          [
+            3,
+            7
+          ],
+          [
+            7,
+            8
+          ]
+        ]
+      },
+      "expected_output": 7000000021
+    },
+    {
+      "name": "pitfall_stale_reinsert_priority_flip",
+      "description": "Nodes 2 and 5 both have low individual ratios (1/100), but after absorbing high-beta children (3 and 6), their cumulative ratios jump dramatically. Tests stale entry detection and correct priority re-evaluation.",
+      "input": {
+        "N": 6,
+        "alpha": [
+          1,
+          100,
+          1,
+          1,
+          100,
+          1
+        ],
+        "beta": [
+          1,
+          1,
+          1000000000,
+          50,
+          1,
+          1000000000
+        ],
+        "edges": [
+          [
+            1,
+            2
+          ],
+          [
+            1,
+            5
+          ],
+          [
+            2,
+            3
+          ],
+          [
+            2,
+            4
+          ],
+          [
+            5,
+            6
+          ]
+        ]
+      },
+      "expected_output": 303000010253
+    },
+    {
+      "name": "pitfall_tree_constraints_high_beta_locked",
+      "description": "High-beta nodes (3,5) are locked behind high-alpha parents (2,4). Global ratio sorting wants 3,5 first but tree prevents it. Tests tree constraint enforcement with overflow-range values.",
+      "input": {
+        "N": 5,
+        "alpha": [
+          1,
+          1000000000,
+          1,
+          1000000000,
+          1
+        ],
+        "beta": [
+          1,
+          1,
+          1000000000,
+          1,
+          1000000000
+        ],
+        "edges": [
+          [
+            1,
+            2
+          ],
+          [
+            2,
+            3
+          ],
+          [
+            1,
+            4
+          ],
+          [
+            4,
+            5
+          ]
+        ]
+      },
+      "expected_output": 3000000004000000003
+    },
+    {
+      "name": "pitfall_chain_cascade_merge_vs_sibling",
+      "description": "Long chain (2->3->...->7) with high beta values vs a sibling (8) with high alpha but low beta. Tests cascading merges up the chain and correct ordering against the sibling with very different characteristics.",
+      "input": {
+        "N": 8,
+        "alpha": [
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1000000000
+        ],
+        "beta": [
+          1,
+          1000000000,
+          999999999,
+          999999998,
+          999999997,
+          999999996,
+          999999995,
+          1
+        ],
+        "edges": [
+          [
+            1,
+            2
+          ],
+          [
+            2,
+            3
+          ],
+          [
+            3,
+            4
+          ],
+          [
+            4,
+            5
+          ],
+          [
+            5,
+            6
+          ],
+          [
+            6,
+            7
+          ],
+          [
+            1,
+            8
+          ]
+        ]
+      },
+      "expected_output": 20999999937
+    },
+    {
+      "name": "pitfall_float_precision_within_subtrees",
+      "description": "Two subtrees with high-alpha parents and near-identical beta/alpha ratios among children. After merging children into parents, the cumulative ratios must be compared precisely. Float comparison would fail on these near-equal ratios.",
+      "input": {
+        "N": 9,
+        "alpha": [
+          1,
+          1000000000,
+          1,
+          1,
+          1,
+          1000000000,
+          1,
+          1,
+          1
+        ],
+        "beta": [
+          1,
+          1,
+          999999999,
+          1000000000,
+          1000000001,
+          1,
+          999999998,
+          1000000000,
+          1000000002
+        ],
+        "edges": [
+          [
+            1,
+            2
+          ],
+          [
+            2,
+            3
+          ],
+          [
+            2,
+            4
+          ],
+          [
+            2,
+            5
+          ],
+          [
+            1,
+            6
+          ],
+          [
+            6,
+            7
+          ],
+          [
+            6,
+            8
+          ],
+          [
+            6,
+            9
+          ]
+        ]
+      },
+      "expected_output": 9000000021999999999
+    },
+    {
+      "name": "equal_ratios_separated",
+      "description": "Tests equal ratios that are not adjacent in the tree - parent and grandchild have same alpha/beta ratio, with different ratio node in between",
+      "input": {
+        "N": 4,
+        "alpha": [
+          20,
+          30,
+          10,
+          20
+        ],
+        "beta": [
+          2,
+          6,
+          5,
+          2
+        ],
+        "edges": [
+          [
+            1,
+            2
+          ],
+          [
+            2,
+            3
+          ],
+          [
+            2,
+            4
+          ]
+        ]
+      },
+      "expected_output": 490
+    },
+    {
+      "name": "parent_low_child_disaster",
+      "description": "Parent with very low alpha and beta, child with very high alpha and beta - tests if algorithm correctly prioritizes parent despite small immediate cost",
+      "input": {
+        "N": 3,
+        "alpha": [
+          1,
+          1000000,
+          50
+        ],
+        "beta": [
+          1,
+          1000000,
+          100
+        ],
+        "edges": [
+          [
+            1,
+            2
+          ],
+          [
+            1,
+            3
+          ]
+        ]
+      },
+      "expected_output": 51000100
+    },
+    {
+      "name": "root_high_beta_enforcement",
+      "description": "Root has very high beta, children have low beta and alpha - ensures root must still be removed first despite high beta penalty",
+      "input": {
+        "N": 3,
+        "alpha": [
+          100,
+          5,
+          5
+        ],
+        "beta": [
+          1000000,
+          1,
+          1
+        ],
+        "edges": [
+          [
+            1,
+            2
+          ],
+          [
+            1,
+            3
+          ]
+        ]
+      },
+      "expected_output": 205
+    },
+    {
+      "name": "zero_alpha_boundary",
+      "description": "Tests boundary condition where some isotopes have zero alpha emission, affecting accumulated radiation calculations",
+      "input": {
+        "N": 4,
+        "alpha": [
+          0,
+          10,
+          0,
+          20
+        ],
+        "beta": [
+          5,
+          100,
+          50,
+          200
+        ],
+        "edges": [
+          [
+            1,
+            2
+          ],
+          [
+            2,
+            3
+          ],
+          [
+            2,
+            4
+          ]
+        ]
+      },
+      "expected_output": 2500
+    },
+    {
+      "name": "zero_beta_boundary",
+      "description": "Tests boundary condition where some isotopes have zero beta sensitivity, potentially simplifying cost calculations",
+      "input": {
+        "N": 4,
+        "alpha": [
+          15,
+          25,
+          30,
+          10
+        ],
+        "beta": [
+          0,
+          50,
+          0,
+          100
+        ],
+        "edges": [
+          [
+            1,
+            2
+          ],
+          [
+            2,
+            3
+          ],
+          [
+            2,
+            4
+          ]
+        ]
+      },
+      "expected_output": 4750
+    },
+    {
+      "name": "mixed_zero_values",
+      "description": "Tests combination of zero alpha and zero beta values in different nodes to verify robust boundary handling",
+      "input": {
+        "N": 5,
+        "alpha": [
+          0,
+          20,
+          0,
+          15,
+          30
+        ],
+        "beta": [
+          10,
+          0,
+          50,
+          0,
+          100
+        ],
+        "edges": [
+          [
+            1,
+            2
+          ],
+          [
+            1,
+            3
+          ],
+          [
+            2,
+            4
+          ],
+          [
+            3,
+            5
+          ]
+        ]
+      },
+      "expected_output": 0
+    },
+    {
+      "name": "min_values_all",
+      "description": "Test with minimum possible alpha and beta values (all 1)",
+      "input": {
+        "N": 4,
+        "alpha": [
+          1,
+          1,
+          1,
+          1
+        ],
+        "beta": [
+          1,
+          1,
+          1,
+          1
+        ],
+        "edges": [
+          [
+            1,
+            2
+          ],
+          [
+            1,
+            3
+          ],
+          [
+            2,
+            4
+          ]
+        ]
+      },
+      "expected_output": 6
+    },
+    {
+      "name": "chain_10_nodes",
+      "description": "Chain of 10 nodes with small values",
+      "input": {
+        "N": 10,
+        "alpha": [
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1
+        ],
+        "beta": [
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1
+        ],
+        "edges": [
+          [
+            1,
+            2
+          ],
+          [
+            2,
+            3
+          ],
+          [
+            3,
+            4
+          ],
+          [
+            4,
+            5
+          ],
+          [
+            5,
+            6
+          ],
+          [
+            6,
+            7
+          ],
+          [
+            7,
+            8
+          ],
+          [
+            8,
+            9
+          ],
+          [
+            9,
+            10
+          ]
+        ]
+      },
+      "expected_output": 45
+    },
+    {
+      "name": "extreme_mix_values",
+      "description": "Mix of extreme high and low values (max alpha, min beta and vice versa)",
+      "input": {
+        "N": 4,
+        "alpha": [
+          1000000000,
+          1,
+          1000000000,
+          1
+        ],
+        "beta": [
+          1,
+          1000000000,
+          1,
+          1000000000
+        ],
+        "edges": [
+          [
+            1,
+            2
+          ],
+          [
+            1,
+            3
+          ],
+          [
+            2,
+            4
+          ]
+        ]
+      },
+      "expected_output": 2000000002000000002
+    },
+    {
+      "name": "wide_star_graph",
+      "description": "Star graph with many children (wide tree) to test sibling ordering",
+      "input": {
+        "N": 10,
+        "alpha": [
+          10,
+          5,
+          4,
+          3,
+          2,
+          1,
+          6,
+          7,
+          8,
+          9
+        ],
+        "beta": [
+          1,
+          100,
+          90,
+          80,
+          70,
+          60,
+          110,
+          120,
+          130,
+          140
+        ],
+        "edges": [
+          [
+            1,
+            2
+          ],
+          [
+            1,
+            3
+          ],
+          [
+            1,
+            4
+          ],
+          [
+            1,
+            5
+          ],
+          [
+            1,
+            6
+          ],
+          [
+            1,
+            7
+          ],
+          [
+            1,
+            8
+          ],
+          [
+            1,
+            9
+          ],
+          [
+            1,
+            10
+          ]
+        ]
+      },
+      "expected_output": 23700
+    },
+    {
+      "name": "pq_overflow_comparison",
+      "description": "Test priority queue cross-multiplication overflow with large subtrees",
+      "input": {
+        "N": 13,
+        "alpha": [
+          1000000000,
+          1000000000,
+          1000000000,
+          1000000000,
+          1000000000,
+          1000000000,
+          1000000000,
+          1000000000,
+          1000000000,
+          1000000000,
+          1000000000,
+          1000000000,
+          1000000000
+        ],
+        "beta": [
+          1,
+          1000000000,
+          1000000000,
+          1000000000,
+          1000000000,
+          1000000000,
+          1000000000,
+          1000000000,
+          1000000000,
+          1000000000,
+          1000000000,
+          1000000000,
+          1000000000
+        ],
+        "edges": [
+          [
+            1,
+            2
+          ],
+          [
+            1,
+            7
+          ],
+          [
+            2,
+            3
+          ],
+          [
+            2,
+            4
+          ],
+          [
+            2,
+            5
+          ],
+          [
+            2,
+            6
+          ],
+          [
+            7,
+            8
+          ],
+          [
+            7,
+            9
+          ],
+          [
+            7,
+            10
+          ],
+          [
+            7,
+            11
+          ],
+          [
+            7,
+            12
+          ],
+          [
+            7,
+            13
+          ]
+        ]
+      },
+      "expected_output": 78000000000000000000
+    },
+    {
+      "name": "total_cost_64bit_overflow",
+      "description": "Test total cost overflow beyond 64-bit unsigned integer limit",
+      "input": {
+        "N": 15,
+        "alpha": [
+          1000000000,
+          1000000000,
+          1000000000,
+          1000000000,
+          1000000000,
+          1000000000,
+          1000000000,
+          1000000000,
+          1000000000,
+          1000000000,
+          1000000000,
+          1000000000,
+          1000000000,
+          1000000000,
+          1000000000
+        ],
+        "beta": [
+          1000000000,
+          1000000000,
+          1000000000,
+          1000000000,
+          1000000000,
+          1000000000,
+          1000000000,
+          1000000000,
+          1000000000,
+          1000000000,
+          1000000000,
+          1000000000,
+          1000000000,
+          1000000000,
+          1000000000
+        ],
+        "edges": [
+          [
+            1,
+            2
+          ],
+          [
+            2,
+            3
+          ],
+          [
+            3,
+            4
+          ],
+          [
+            4,
+            5
+          ],
+          [
+            5,
+            6
+          ],
+          [
+            6,
+            7
+          ],
+          [
+            7,
+            8
+          ],
+          [
+            8,
+            9
+          ],
+          [
+            9,
+            10
+          ],
+          [
+            10,
+            11
+          ],
+          [
+            11,
+            12
+          ],
+          [
+            12,
+            13
+          ],
+          [
+            13,
+            14
+          ],
+          [
+            14,
+            15
+          ]
+        ]
+      },
+      "expected_output": 105000000000000000000
+    },
+    {
+      "name": "max_beta_zero_alpha",
+      "description": "Test case where beta is maximum but alpha contributions are minimal",
+      "input": {
+        "N": 3,
+        "alpha": [
+          1,
+          1,
+          1
+        ],
+        "beta": [
+          1000000000,
+          1000000000,
+          1000000000
+        ],
+        "edges": [
+          [
+            1,
+            2
+          ],
+          [
+            1,
+            3
+          ]
+        ]
+      },
+      "expected_output": 3000000000
+    },
+    {
+      "name": "extreme_skewed_ratios",
+      "description": "Extreme ratio differences - very high alpha/low beta vs low alpha/high beta",
+      "input": {
+        "N": 4,
+        "alpha": [
+          1000000000,
+          1,
+          1000000000,
+          1
+        ],
+        "beta": [
+          1,
+          1000000000,
+          1,
+          1000000000
+        ],
+        "edges": [
+          [
+            1,
+            2
+          ],
+          [
+            1,
+            3
+          ],
+          [
+            2,
+            4
+          ]
+        ]
+      },
+      "expected_output": 2000000002000000002
+    },
+    {
+      "name": "long_chain_alternating",
+      "description": "Long chain with alternating max/min values to test priority ordering in chains",
+      "input": {
+        "N": 10,
+        "alpha": [
+          1000000000,
+          1,
+          1000000000,
+          1,
+          1000000000,
+          1,
+          1000000000,
+          1,
+          1000000000,
+          1
+        ],
+        "beta": [
+          1,
+          1000000000,
+          1,
+          1000000000,
+          1,
+          1000000000,
+          1,
+          1000000000,
+          1,
+          1000000000
+        ],
+        "edges": [
+          [
+            1,
+            2
+          ],
+          [
+            2,
+            3
+          ],
+          [
+            3,
+            4
+          ],
+          [
+            4,
+            5
+          ],
+          [
+            5,
+            6
+          ],
+          [
+            6,
+            7
+          ],
+          [
+            7,
+            8
+          ],
+          [
+            8,
+            9
+          ],
+          [
+            9,
+            10
+          ]
+        ]
+      },
+      "expected_output": 15000000020000000010
+    },
+    {
+      "name": "zero_cost_chain",
+      "description": "Chain where all nodes except root have alpha=1 and beta=1 (minimal cost scenario)",
+      "input": {
+        "N": 5,
+        "alpha": [
+          1,
+          1,
+          1,
+          1,
+          1
+        ],
+        "beta": [
+          1,
+          1,
+          1,
+          1,
+          1
+        ],
+        "edges": [
+          [
+            1,
+            2
+          ],
+          [
+            2,
+            3
+          ],
+          [
+            3,
+            4
+          ],
+          [
+            4,
+            5
+          ]
+        ]
+      },
+      "expected_output": 10
+    },
+    {
+      "name": "perfect_binary_tree",
+      "description": "Perfect binary tree structure with uniform values",
+      "input": {
+        "N": 7,
+        "alpha": [
+          10,
+          10,
+          10,
+          10,
+          10,
+          10,
+          10
+        ],
+        "beta": [
+          10,
+          10,
+          10,
+          10,
+          10,
+          10,
+          10
+        ],
+        "edges": [
+          [
+            1,
+            2
+          ],
+          [
+            1,
+            3
+          ],
+          [
+            2,
+            4
+          ],
+          [
+            2,
+            5
+          ],
+          [
+            3,
+            6
+          ],
+          [
+            3,
+            7
+          ]
+        ]
+      },
+      "expected_output": 2100
+    },
+    {
+      "name": "huge_subtree_vs_small",
+      "description": "One subtree with huge accumulated alpha vs small subtree - tests subtree ordering",
+      "input": {
+        "N": 6,
+        "alpha": [
+          1,
+          999999999,
+          999999999,
+          999999999,
+          1,
+          1
+        ],
+        "beta": [
+          1,
+          1,
+          1,
+          1,
+          100,
+          100
+        ],
+        "edges": [
+          [
+            1,
+            2
+          ],
+          [
+            1,
+            5
+          ],
+          [
+            2,
+            3
+          ],
+          [
+            3,
+            4
+          ],
+          [
+            5,
+            6
+          ]
+        ]
+      },
+      "expected_output": 3000000306
+    },
+    {
+      "name": "edge_zero_alpha_root",
+      "description": "Edge case: root has zero alpha emission (minimum possible value + 1)",
+      "input": {
+        "N": 3,
+        "alpha": [
+          1,
+          100,
+          100
+        ],
+        "beta": [
+          1000000000,
+          1,
+          1
+        ],
+        "edges": [
+          [
+            1,
+            2
+          ],
+          [
+            1,
+            3
+          ]
+        ]
+      },
+      "expected_output": 102
+    },
+    {
+      "name": "edge_single_child_chain",
+      "description": "Edge case: each node has exactly one child (long chain)",
+      "input": {
+        "N": 10,
+        "alpha": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10
+        ],
+        "beta": [
+          10,
+          9,
+          8,
+          7,
+          6,
+          5,
+          4,
+          3,
+          2,
+          1
+        ],
+        "edges": [
+          [
+            1,
+            2
+          ],
+          [
+            2,
+            3
+          ],
+          [
+            3,
+            4
+          ],
+          [
+            4,
+            5
+          ],
+          [
+            5,
+            6
+          ],
+          [
+            6,
+            7
+          ],
+          [
+            7,
+            8
+          ],
+          [
+            8,
+            9
+          ],
+          [
+            9,
+            10
+          ]
+        ]
+      },
+      "expected_output": 495
+    },
+    {
+      "name": "edge_mixed_extremes",
+      "description": "Edge case: mix of minimum and maximum alpha/beta values in tree",
+      "input": {
+        "N": 5,
+        "alpha": [
+          1,
+          1000000000,
+          1,
+          1000000000,
+          1
+        ],
+        "beta": [
+          1000000000,
+          1,
+          1000000000,
+          1,
+          1000000000
+        ],
+        "edges": [
+          [
+            1,
+            2
+          ],
+          [
+            1,
+            3
+          ],
+          [
+            2,
+            4
+          ],
+          [
+            3,
+            5
+          ]
+        ]
+      },
+      "expected_output": 4000000006
+    },
+    {
+      "name": "edge_perfect_binary_tree",
+      "description": "Edge case: perfect binary tree with uniform alpha/beta values",
+      "input": {
+        "N": 15,
+        "alpha": [
+          10,
+          10,
+          10,
+          10,
+          10,
+          10,
+          10,
+          10,
+          10,
+          10,
+          10,
+          10,
+          10,
+          10,
+          10
+        ],
+        "beta": [
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1
+        ],
+        "edges": [
+          [
+            1,
+            2
+          ],
+          [
+            1,
+            3
+          ],
+          [
+            2,
+            4
+          ],
+          [
+            2,
+            5
+          ],
+          [
+            3,
+            6
+          ],
+          [
+            3,
+            7
+          ],
+          [
+            4,
+            8
+          ],
+          [
+            4,
+            9
+          ],
+          [
+            5,
+            10
+          ],
+          [
+            5,
+            11
+          ],
+          [
+            6,
+            12
+          ],
+          [
+            6,
+            13
+          ],
+          [
+            7,
+            14
+          ],
+          [
+            7,
+            15
+          ]
+        ]
+      },
+      "expected_output": 1050
+    },
+    {
+      "name": "edge_all_same_values",
+      "description": "Edge case: all nodes have identical alpha and beta values",
+      "input": {
+        "N": 6,
+        "alpha": [
+          100,
+          100,
+          100,
+          100,
+          100,
+          100
+        ],
+        "beta": [
+          50,
+          50,
+          50,
+          50,
+          50,
+          50
+        ],
+        "edges": [
+          [
+            1,
+            2
+          ],
+          [
+            1,
+            3
+          ],
+          [
+            2,
+            4
+          ],
+          [
+            2,
+            5
+          ],
+          [
+            3,
+            6
+          ]
+        ]
+      },
+      "expected_output": 75000
+    },
+    {
+      "name": "edge_wide_tree_many_children",
+      "description": "Edge case: root with many children (wide but shallow tree)",
+      "input": {
+        "N": 10,
+        "alpha": [
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1
+        ],
+        "beta": [
+          1,
+          10,
+          20,
+          30,
+          40,
+          50,
+          60,
+          70,
+          80,
+          90
+        ],
+        "edges": [
+          [
+            1,
+            2
+          ],
+          [
+            1,
+            3
+          ],
+          [
+            1,
+            4
+          ],
+          [
+            1,
+            5
+          ],
+          [
+            1,
+            6
+          ],
+          [
+            1,
+            7
+          ],
+          [
+            1,
+            8
+          ],
+          [
+            1,
+            9
+          ],
+          [
+            1,
+            10
+          ]
+        ]
+      },
+      "expected_output": 1650
+    },
+    {
+      "name": "edge_sparse_tree_structure",
+      "description": "Edge case: tree with multiple branches and different depths per subtree",
+      "input": {
+        "N": 8,
+        "alpha": [
+          50,
+          25,
+          25,
+          10,
+          10,
+          5,
+          5,
+          1
+        ],
+        "beta": [
+          1,
+          2,
+          4,
+          8,
+          16,
+          32,
+          64,
+          128
+        ],
+        "edges": [
+          [
+            1,
+            2
+          ],
+          [
+            1,
+            3
+          ],
+          [
+            2,
+            4
+          ],
+          [
+            3,
+            5
+          ],
+          [
+            4,
+            6
+          ],
+          [
+            5,
+            7
+          ],
+          [
+            6,
+            8
+          ]
+        ]
+      },
+      "expected_output": 25224
+    }
+  ]
+}

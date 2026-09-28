@@ -19,7 +19,7 @@ demonstrates.
 ## Problem Statistics
 
 <!-- statistics:start -->
-Problems: 5 · Python: 5 · C++: 0 · Go: 2 · Rust: 0
+Problems: 6 | Python: 6 | C++: 0 | Go: 2 | Rust: 0
 <!-- statistics:end -->
 
 Statistics and the [problem index](docs/problem-index.md) are generated from the
