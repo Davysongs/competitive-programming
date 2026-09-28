@@ -111,7 +111,7 @@ def reconstruct_tree(
                 else:
                     query_set.extend(white)
 
-            if query_oracle(query_set) > 0:
+            if len(query_set) >= 2 and query_oracle(query_set) > 0:
                 u, v = find_single_edge(query_set)
                 canonical_edge = [min(u, v), max(u, v)]
                 discovered_edges.append(canonical_edge)
