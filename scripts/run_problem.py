@@ -88,6 +88,56 @@ def _terminate_and_reap(process: subprocess.Popen[str]) -> None:
         pass
 
 
+def _max_matching_forest(subset: list[int], edges: list[list[int]]) -> int:
+    subset_set = set(subset)
+    adj: dict[int, list[int]] = {u: [] for u in subset_set}
+    for edge in edges:
+        u, v = edge[0], edge[1]
+        if u in subset_set and v in subset_set:
+            adj[u].append(v)
+            adj[v].append(u)
+
+    visited: set[int] = set()
+    total_matching = 0
+
+    for start in subset_set:
+        if start in visited:
+            continue
+        component: list[int] = []
+        queue = [start]
+        visited.add(start)
+        parent: dict[int, int | None] = {start: None}
+        for u in queue:
+            component.append(u)
+            for v in adj[u]:
+                if v not in visited:
+                    visited.add(v)
+                    parent[v] = u
+                    queue.append(v)
+
+        children: dict[int, list[int]] = {u: [] for u in component}
+        for u in component:
+            p = parent[u]
+            if p is not None:
+                children[p].append(u)
+
+        dp0: dict[int, int] = {}
+        dp1: dict[int, int] = {}
+        for u in reversed(component):
+            sum_m = sum(max(dp0[c], dp1[c]) for c in children[u])
+            dp0[u] = sum_m
+            best_diff = -10**9
+            for c in children[u]:
+                diff = dp0[c] - max(dp0[c], dp1[c])
+                if diff > best_diff:
+                    best_diff = diff
+            dp1[u] = 1 + sum_m + best_diff if children[u] else 0
+
+        total_matching += max(dp0[start], dp1[start])
+
+    return total_matching
+
+
 def _run_interactive_test(
     run_command: list[str],
     input_data: dict[str, Any],
@@ -96,14 +146,32 @@ def _run_interactive_test(
     test: dict[str, Any],
     timeout_seconds: float,
 ) -> tuple[bool, str]:
-    hidden = input_data.get("a")
-    if hidden is None and isinstance(input_data.get("hidden_state"), dict):
-        hidden = input_data["hidden_state"].get("a")
-    if not isinstance(hidden, list) or not hidden:
-        return False, "interactive test requires non-empty hidden list 'a'"
-
-    n = input_data.get("n", len(hidden))
-    max_queries = test.get("max_queries", 13000)
+    is_tree_matching = "edges" in input_data or (
+        isinstance(input_data.get("hidden_state"), dict)
+        and "edges" in input_data["hidden_state"]
+    )
+    if is_tree_matching:
+        edges = input_data.get("edges")
+        if edges is None and isinstance(input_data.get("hidden_state"), dict):
+            edges = input_data["hidden_state"].get("edges")
+        if not isinstance(edges, list):
+            return False, "interactive test requires hidden list 'edges'"
+        n = input_data.get("N", input_data.get("n", 0))
+        if not n and isinstance(input_data.get("initial_input"), dict):
+            n = input_data["initial_input"].get("N", input_data["initial_input"].get("n", 0))
+        if not n:
+            n = len(edges) + 1
+        max_queries = test.get("max_queries", 12000)
+        initial_payload = {"N": n, "n": n}
+    else:
+        hidden = input_data.get("a")
+        if hidden is None and isinstance(input_data.get("hidden_state"), dict):
+            hidden = input_data["hidden_state"].get("a")
+        if not isinstance(hidden, list) or not hidden:
+            return False, "interactive test requires non-empty hidden list 'a'"
+        n = input_data.get("n", len(hidden))
+        max_queries = test.get("max_queries", 13000)
+        initial_payload = {"n": n}
 
     try:
         process = subprocess.Popen(
@@ -161,7 +229,7 @@ def _run_interactive_test(
             except queue.Empty:
                 return False, None
 
-        process.stdin.write(json.dumps({"n": n}) + "\n")
+        process.stdin.write(json.dumps(initial_payload) + "\n")
         process.stdin.flush()
 
         query_count = 0
@@ -189,16 +257,31 @@ def _run_interactive_test(
                 if query_count > max_queries:
                     _terminate_and_reap(process)
                     return False, f"query limit exceeded: {query_count} > {max_queries}"
-                x = message.get("x")
-                if not isinstance(x, int) or isinstance(x, bool) or not (0 <= x < (1 << 30)):
-                    _terminate_and_reap(process)
-                    return False, f"invalid query parameter x: {x!r}"
-                if not hidden:
-                    _terminate_and_reap(process)
-                    return False, "interactive test requires non-empty hidden list 'a'"
-                response_val = max(y ^ x for y in hidden)
-                process.stdin.write(json.dumps({"res": response_val}) + "\n")
-                process.stdin.flush()
+                if is_tree_matching:
+                    s_nodes = message.get("S")
+                    if not isinstance(s_nodes, list) or not s_nodes:
+                        _terminate_and_reap(process)
+                        return False, f"invalid query parameter S: {s_nodes!r}"
+                    if not all(isinstance(node, int) and not isinstance(node, bool) and 1 <= node <= n for node in s_nodes):
+                        _terminate_and_reap(process)
+                        return False, f"invalid node id in query parameter S: {s_nodes!r}"
+                    if len(s_nodes) != len(set(s_nodes)):
+                        _terminate_and_reap(process)
+                        return False, f"duplicate node id in query parameter S: {s_nodes!r}"
+                    response_val = _max_matching_forest(s_nodes, edges)
+                    process.stdin.write(json.dumps({"matching_size": response_val}) + "\n")
+                    process.stdin.flush()
+                else:
+                    x = message.get("x")
+                    if not isinstance(x, int) or isinstance(x, bool) or not (0 <= x < (1 << 30)):
+                        _terminate_and_reap(process)
+                        return False, f"invalid query parameter x: {x!r}"
+                    if not hidden:
+                        _terminate_and_reap(process)
+                        return False, "interactive test requires non-empty hidden list 'a'"
+                    response_val = max(y ^ x for y in hidden)
+                    process.stdin.write(json.dumps({"res": response_val}) + "\n")
+                    process.stdin.flush()
             elif msg_type == "answer":
                 actual = message.get("value")
                 break
