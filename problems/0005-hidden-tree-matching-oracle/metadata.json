@@ -1,0 +1,26 @@
+{
+  "id": "0005",
+  "legacy_id": "recdkpvzs3fwyhxce",
+  "slug": "hidden-tree-matching-oracle",
+  "title": "Hidden Tree Matching Oracle",
+  "difficulty": "Expert",
+  "category": [
+    "Algorithmic Paradigms",
+    "Graph Theory"
+  ],
+  "tags": [
+    "interactive",
+    "binary-search",
+    "tree"
+  ],
+  "cognitive_focus": "Observation",
+  "resource_limits": {
+    "time_ms": 20000,
+    "memory_mb": 256
+  },
+  "io_mode": "interactive",
+  "available_languages": [
+    "python"
+  ],
+  "status": "verified"
+}
