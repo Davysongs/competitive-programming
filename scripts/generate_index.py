@@ -34,7 +34,7 @@ def render_index() -> str:
             str(metadata["difficulty"]),
             ", ".join(metadata["category"]),
             ", ".join(f"`{tag}`" for tag in metadata["tags"]),
-            *("[x]" if language in languages else "-" for language in LANGUAGE_FILES),
+            *("✓" if language in languages else "—" for language in LANGUAGE_FILES),
         ]
         rows.append("| " + " | ".join(cells) + " |")
     rows.append("")
@@ -51,7 +51,7 @@ def render_statistics() -> str:
         f"{language.capitalize() if language != 'cpp' else 'C++'}: {language_counts[language]}"
         for language in LANGUAGE_FILES
     ]
-    return START_MARKER + "\n" + " | ".join(fields) + "\n" + END_MARKER
+    return START_MARKER + "\n" + " · ".join(fields) + "\n" + END_MARKER
 
 
 def expected_files() -> dict[Path, str]:

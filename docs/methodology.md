@@ -18,11 +18,10 @@ default comparison is exact. A test may opt into `float_tolerance` when equivale
 floating-point implementations can differ at insignificant digits.
 
 Large inputs may use deterministic generators. Supported generators currently
-cover repeated strings, seeded random strings, arrays of strings, trees, and
-packet records; random generators own their own seed so output is stable.
-The `$map_input` expected-output encoding compactly stores a lookup for large
-generated arrays whose output is element-wise. It avoids checking in megabytes
-of repeated values and, unlike a runtime reference oracle, remains an
+cover repeated strings, seeded random strings, arrays of strings, and packet
+records; random generators own their own seed so output is stable. The `$map_input` expected-output encoding compactly stores a
+lookup for large generated arrays whose output is element-wise. It avoids checking
+in megabytes of repeated values and, unlike a runtime reference oracle, remains an
 independent expectation.
 
 The complete schema, generator catalog, validation rules, and targeted execution
