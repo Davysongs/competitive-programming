@@ -1,0 +1,23 @@
+{
+  "id": "0007",
+  "legacy_id": "recgdjq6zc1wbycpi",
+  "slug": "palindrome-tiling",
+  "title": "Palindrome Tiling",
+  "difficulty": "Very Hard",
+  "category": [
+    "Dynamic Programming"
+  ],
+  "tags": [
+    "interval-dp"
+  ],
+  "cognitive_focus": "Logic",
+  "resource_limits": {
+    "time_ms": 5000,
+    "memory_mb": 256
+  },
+  "io_mode": "json-stdio",
+  "available_languages": [
+    "python"
+  ],
+  "status": "verified"
+}
