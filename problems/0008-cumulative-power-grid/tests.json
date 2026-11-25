@@ -1,0 +1,614 @@
+{
+  "io_mode": "json-stdio",
+  "comparison": "exact",
+  "float_tolerance": 0,
+  "tests": [
+    {
+      "name": "example1",
+      "description": "N=2, tight prefix bounds, both nodes active; min cost is -80",
+      "input": {
+        "n": 2,
+        "d": [
+          10,
+          20
+        ],
+        "p": [
+          5,
+          1
+        ]
+      },
+      "expected_output": 998244273
+    },
+    {
+      "name": "example2",
+      "description": "N=2, first prefix loosened to 0; both nodes merge into one active block",
+      "input": {
+        "n": 2,
+        "d": [
+          0,
+          20
+        ],
+        "p": [
+          5,
+          1
+        ]
+      },
+      "expected_output": 998244265
+    },
+    {
+      "name": "example3",
+      "description": "N=2, D[0]=0, P[0]=30 very large; node 1 goes inactive (x1=0)",
+      "input": {
+        "n": 2,
+        "d": [
+          0,
+          20
+        ],
+        "p": [
+          30,
+          1
+        ]
+      },
+      "expected_output": 40
+    },
+    {
+      "name": "single_node_basic",
+      "description": "N=1, single active node",
+      "input": {
+        "n": 1,
+        "d": [
+          10
+        ],
+        "p": [
+          5
+        ]
+      },
+      "expected_output": 100
+    },
+    {
+      "name": "single_node_zero_d",
+      "description": "N=1, D[0]=0 so W=0; zero energy needed",
+      "input": {
+        "n": 1,
+        "d": [
+          0
+        ],
+        "p": [
+          5
+        ]
+      },
+      "expected_output": 0
+    },
+    {
+      "name": "all_zero_d",
+      "description": "N=3, all D=0 (D_N=0); no energy injection needed, cost is 0 regardless of P",
+      "input": {
+        "n": 3,
+        "d": [
+          0,
+          0,
+          0
+        ],
+        "p": [
+          5,
+          3,
+          1
+        ]
+      },
+      "expected_output": 0
+    },
+    {
+      "name": "all_equal_p",
+      "description": "N=3, uniform P=1; no merges (equal nu), three separate blocks",
+      "input": {
+        "n": 3,
+        "d": [
+          5,
+          10,
+          15
+        ],
+        "p": [
+          1,
+          1,
+          1
+        ]
+      },
+      "expected_output": 998244233
+    },
+    {
+      "name": "zero_prefix",
+      "description": "N=3, first two D=0; large P[0]=10 goes inactive, merge driven by final bound",
+      "input": {
+        "n": 3,
+        "d": [
+          0,
+          0,
+          20
+        ],
+        "p": [
+          10,
+          1,
+          1
+        ]
+      },
+      "expected_output": 332747957
+    },
+    {
+      "name": "tight_then_rise",
+      "description": "N=4, D=[10, 10, 10, 20], P increasing; no PAVA merge, cascading cost",
+      "input": {
+        "n": 4,
+        "d": [
+          10,
+          10,
+          10,
+          20
+        ],
+        "p": [
+          1,
+          2,
+          3,
+          4
+        ]
+      },
+      "expected_output": 332747929
+    },
+    {
+      "name": "large_p_inactive",
+      "description": "N=3, P=[100, 100, 1]; first two nodes go inactive where possible",
+      "input": {
+        "n": 3,
+        "d": [
+          10,
+          20,
+          30
+        ],
+        "p": [
+          100,
+          100,
+          1
+        ]
+      },
+      "expected_output": 3420
+    },
+    {
+      "name": "all_zero_except_last",
+      "description": "N=5, D=[0, 0, 0, 0, 100], P=[1, 1, 1, 1, 1]; all energy concentrated at end",
+      "input": {
+        "n": 5,
+        "d": [
+          0,
+          0,
+          0,
+          0,
+          100
+        ],
+        "p": [
+          1,
+          1,
+          1,
+          1,
+          1
+        ]
+      },
+      "expected_output": 998236553
+    },
+    {
+      "name": "large_values",
+      "description": "N=2, D and P at max 10^9; validates 64-bit modular arithmetic",
+      "input": {
+        "n": 2,
+        "d": [
+          1000000000,
+          2000000000
+        ],
+        "p": [
+          1000000000,
+          1000000000
+        ]
+      },
+      "expected_output": 433897443
+    },
+    {
+      "name": "all_tied_p",
+      "description": "N=5, all P=3; equal nu across all blocks (no merge), uniform allocation",
+      "input": {
+        "n": 5,
+        "d": [
+          10,
+          20,
+          30,
+          40,
+          50
+        ],
+        "p": [
+          3,
+          3,
+          3,
+          3,
+          3
+        ]
+      },
+      "expected_output": 998242653
+    },
+    {
+      "name": "p_decreasing_cascade",
+      "description": "N=5, P strictly decreasing; all blocks merge into one giant active block",
+      "input": {
+        "n": 5,
+        "d": [
+          5,
+          10,
+          15,
+          20,
+          25
+        ],
+        "p": [
+          5,
+          4,
+          3,
+          2,
+          1
+        ]
+      },
+      "expected_output": 998244003
+    },
+    {
+      "name": "p_increasing_no_merge",
+      "description": "N=4, P strictly increasing; no merges, each block solved independently",
+      "input": {
+        "n": 4,
+        "d": [
+          10,
+          20,
+          30,
+          40
+        ],
+        "p": [
+          1,
+          2,
+          3,
+          4
+        ]
+      },
+      "expected_output": 998243348
+    },
+    {
+      "name": "all_zero_prefix",
+      "description": "N=5, all D[:4]=0, D[4]=50, P decreasing; single merged block over all 5 nodes",
+      "input": {
+        "n": 5,
+        "d": [
+          0,
+          0,
+          0,
+          0,
+          50
+        ],
+        "p": [
+          5,
+          4,
+          3,
+          2,
+          1
+        ]
+      },
+      "expected_output": 998242643
+    },
+    {
+      "name": "large_p_at_end",
+      "description": "N=3, P=[1, 1, 100]; last node has very high cost, prefer early front-loading",
+      "input": {
+        "n": 3,
+        "d": [
+          100,
+          200,
+          300
+        ],
+        "p": [
+          1,
+          1,
+          100
+        ]
+      },
+      "expected_output": 998198219
+    },
+    {
+      "name": "identical_d",
+      "description": "N=5, all D=20 (only last prefix binding), P decreasing; big single merge",
+      "input": {
+        "n": 5,
+        "d": [
+          20,
+          20,
+          20,
+          20,
+          20
+        ],
+        "p": [
+          5,
+          4,
+          3,
+          2,
+          1
+        ]
+      },
+      "expected_output": 200
+    },
+    {
+      "name": "alternating_p",
+      "description": "N=6, alternating P=[10, 1, 10, 1, 10, 1]; stresses dual heap active/inactive flipping",
+      "input": {
+        "n": 6,
+        "d": [
+          5,
+          10,
+          15,
+          20,
+          25,
+          30
+        ],
+        "p": [
+          10,
+          1,
+          10,
+          1,
+          10,
+          1
+        ]
+      },
+      "expected_output": 998243852
+    },
+    {
+      "name": "all_d_equal_nonzero_uniform_p",
+      "description": "N=5, all D same nonzero, uniform P; only first block has W>0, rest have W=0 so they go inactive",
+      "input": {
+        "n": 5,
+        "d": [
+          10,
+          10,
+          10,
+          10,
+          10
+        ],
+        "p": [
+          3,
+          3,
+          3,
+          3,
+          3
+        ]
+      },
+      "expected_output": 60
+    },
+    {
+      "name": "all_p_equal_large_nonunif_d",
+      "description": "N=4, all P=100 (non-trivial), D=[10,10,10,40]; tests uniform large-P blocks with late spike",
+      "input": {
+        "n": 4,
+        "d": [
+          10,
+          10,
+          10,
+          40
+        ],
+        "p": [
+          100,
+          100,
+          100,
+          100
+        ]
+      },
+      "expected_output": 6800
+    },
+    {
+      "name": "max_dn_modular",
+      "description": "N=3, D=[0,0,2*10^9], P=[1,1,1]; tests modular arithmetic when D_N is at the maximum constraint",
+      "input": {
+        "n": 3,
+        "d": [
+          0,
+          0,
+          2000000000
+        ],
+        "p": [
+          1,
+          1,
+          1
+        ]
+      },
+      "expected_output": 426737017
+    },
+    {
+      "name": "stress_n100",
+      "description": "Random N=100 stress test; validates PAVA performance and modular arithmetic",
+      "input": {
+        "n": 100
+      },
+      "expected_output": 62282422,
+      "generators": [
+        {
+          "type": "random_array",
+          "field": "d",
+          "n": 100,
+          "min": 0,
+          "max": 100000,
+          "sorted": true,
+          "seed": 42
+        },
+        {
+          "type": "random_array",
+          "field": "p",
+          "n": 100,
+          "min": 1,
+          "max": 1000,
+          "seed": 43
+        }
+      ]
+    },
+    {
+      "name": "stress_n1000",
+      "description": "Random N=1000 large stress test; validates O(N log^2 N) performance",
+      "input": {
+        "n": 1000
+      },
+      "expected_output": 337451,
+      "generators": [
+        {
+          "type": "random_array",
+          "field": "d",
+          "n": 1000,
+          "min": 0,
+          "max": 2000000000,
+          "sorted": true,
+          "seed": 99
+        },
+        {
+          "type": "random_array",
+          "field": "p",
+          "n": 1000,
+          "min": 1,
+          "max": 1000000000,
+          "seed": 100
+        }
+      ]
+    },
+    {
+      "name": "stress_n100000_max",
+      "description": "Maximum N=100000 stress test; validates O(N log^2 N) performance at full constraint limits",
+      "input": {
+        "n": 100000
+      },
+      "expected_output": 338814144,
+      "generators": [
+        {
+          "type": "random_array",
+          "field": "d",
+          "n": 100000,
+          "min": 0,
+          "max": 2000000000,
+          "sorted": true,
+          "seed": 77
+        },
+        {
+          "type": "random_array",
+          "field": "p",
+          "n": 100000,
+          "min": 1,
+          "max": 1000000000,
+          "seed": 78
+        }
+      ]
+    },
+    {
+      "name": "force_activation_single_large_p",
+      "description": "N=1 with large P and binding D; validates forced activation when W > 0",
+      "input": {
+        "n": 1,
+        "d": [
+          10
+        ],
+        "p": [
+          1000000000
+        ]
+      },
+      "expected_output": 35112940
+    },
+    {
+      "name": "equal_nu_boundary",
+      "description": "Two blocks with exactly equal nu at merge check; validates < vs <= comparison",
+      "input": {
+        "n": 3,
+        "d": [
+          10,
+          20,
+          30
+        ],
+        "p": [
+          1,
+          1,
+          1
+        ]
+      },
+      "expected_output": 998243813
+    },
+    {
+      "name": "modular_overflow_stress",
+      "description": "Large D and P causing numerator overflow if not reduced mod before squaring",
+      "input": {
+        "n": 3,
+        "d": [
+          0,
+          0,
+          1000000000
+        ],
+        "p": [
+          1000000000,
+          1000000000,
+          1000000000
+        ]
+      },
+      "expected_output": 289264962
+    },
+    {
+      "name": "float_precision_pitfall",
+      "description": "Validates integer cross-multiplication for nu comparison (tutorial pitfall 1: float precision)",
+      "input": {
+        "n": 3,
+        "d": [
+          0,
+          10000000000000,
+          20000000000000
+        ],
+        "p": [
+          1,
+          1,
+          1
+        ]
+      },
+      "expected_output": 881602863
+    },
+    {
+      "name": "tiebreaker_exact_nu_equality",
+      "description": "Isolates strict < vs <= merge comparison when two blocks have exactly equal nu values",
+      "input": {
+        "n": 4,
+        "d": [
+          10,
+          20,
+          50,
+          80
+        ],
+        "p": [
+          5,
+          5,
+          5,
+          5
+        ]
+      },
+      "expected_output": 998240353
+    },
+    {
+      "name": "tiebreaker_multi_level_activation",
+      "description": "Multi-level tiebreaker: multiple inactive nodes with equal P compete for activation",
+      "input": {
+        "n": 5,
+        "d": [
+          0,
+          0,
+          0,
+          0,
+          30
+        ],
+        "p": [
+          10,
+          10,
+          10,
+          1,
+          1
+        ]
+      },
+      "expected_output": 399297308
+    }
+  ]
+}
