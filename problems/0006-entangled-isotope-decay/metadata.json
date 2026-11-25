@@ -1,0 +1,28 @@
+{
+  "id": "0006",
+  "legacy_id": "recdnoxaplzpcdelq",
+  "slug": "entangled-isotope-decay",
+  "title": "Entangled Isotope Decay",
+  "difficulty": "Very Hard",
+  "category": [
+    "Data Structures",
+    "Graph Theory",
+    "Greedy"
+  ],
+  "tags": [
+    "exchange-argument",
+    "priority-queue",
+    "priority-queue-greedy",
+    "tree"
+  ],
+  "cognitive_focus": "Observation",
+  "resource_limits": {
+    "time_ms": 30000,
+    "memory_mb": 256
+  },
+  "io_mode": "json-stdio",
+  "available_languages": [
+    "python"
+  ],
+  "status": "verified"
+}

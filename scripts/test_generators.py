@@ -248,6 +248,19 @@ def _generate_random_tree(
     return edges
 
 
+def _validate_linear_chain(config: Mapping[str, Any]) -> None:
+    _integer(config, "n", minimum=0)
+    _boolean(config, "one_indexed", True)
+
+
+def _generate_linear_chain(
+    _rng: random.Random, config: Mapping[str, Any]
+) -> list[list[int]]:
+    size = int(config["n"])
+    offset = 1 if config.get("one_indexed", True) else 0
+    return [[node + offset, node + 1 + offset] for node in range(max(0, size - 1))]
+
+
 def _validate_random_intervals(config: Mapping[str, Any]) -> None:
     size = _integer(config, "n", minimum=0)
     minimum = _integer(config, "min", default=0)
@@ -364,6 +377,7 @@ GENERATORS: dict[str, tuple[Validator, Generator, bool]] = {
     ),
     "random_matrix": (_validate_random_matrix, _generate_random_matrix, True),
     "random_tree": (_validate_random_tree, _generate_random_tree, True),
+    "linear_chain": (_validate_linear_chain, _generate_linear_chain, False),
     "random_intervals": (
         _validate_random_intervals,
         _generate_random_intervals,

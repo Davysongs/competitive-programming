@@ -41,6 +41,7 @@ class GeneratorTests(unittest.TestCase):
                 "max": 9,
             },
             "random_tree": {"seed": 6, "n": 6, "weighted": True},
+            "linear_chain": {"n": 5, "one_indexed": True},
             "random_intervals": {
                 "seed": 7,
                 "n": 3,
@@ -101,6 +102,22 @@ class GeneratorTests(unittest.TestCase):
         )
         self.assertEqual(len(edges), 99)
         self.assertTrue(all(1 <= left <= 100 and 1 <= right <= 100 for left, right in edges))
+
+    def test_linear_chain_structure(self) -> None:
+        edges_1 = generate_test_input(
+            {"type": "linear_chain", "n": 4, "one_indexed": True}
+        )
+        self.assertEqual(edges_1, [[1, 2], [2, 3], [3, 4]])
+
+        edges_0 = generate_test_input(
+            {"type": "linear_chain", "n": 3, "one_indexed": False}
+        )
+        self.assertEqual(edges_0, [[0, 1], [1, 2]])
+
+        edges_empty = generate_test_input(
+            {"type": "linear_chain", "n": 1, "one_indexed": True}
+        )
+        self.assertEqual(edges_empty, [])
 
     def test_non_overlapping_intervals_are_ordered(self) -> None:
         intervals = generate_test_input(
