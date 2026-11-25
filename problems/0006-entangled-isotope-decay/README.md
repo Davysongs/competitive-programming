@@ -62,7 +62,7 @@ Example output:
 - $1 \le \text{alpha}_i \le 10^9$ for all $i$
 - $1 \le \text{beta}_i \le 10^9$ for all $i$
 - The edges form a valid rooted tree with node 1 as root ($u$ is the parent of $v$).
-- The answer can be very large (up to approximately $2 \times 10^{28}$). Solutions must use big-integer arithmetic.
+- The answer can be very large (up to approximately $2 \times 10^{28}$) and algorithm cross-products can reach $4 \times 10^{28}$, so 64-bit integers are insufficient. Solutions should use signed 128-bit or arbitrary-precision integer arithmetic to represent both the maximum cost and cross-products.
 - Time limit: 30000ms
 - Memory limit: 256MB
 
@@ -170,12 +170,12 @@ Consider two adjacent contiguous blocks of elements $A$ and $B$ in the removal o
 Scheduling $A$ before $B$ is strictly optimal if:
 $$\alpha(A) \times \beta(B) < \alpha(B) \times \beta(A) \iff \frac{\beta(A)}{\alpha(A)} > \frac{\beta(B)}{\alpha(B)}$$
 
-Hence, nodes or compound blocks with a higher ratio $\beta / \alpha$ must be executed earlier whenever precedence constraints allow.
+Hence, between two adjacent blocks whose swap preserves precedence (no node in the second block depends on a node in the first), the block with the higher aggregate ratio $\beta / \alpha$ should be scheduled earlier. Note that this exchange argument applies only to adjacent swappable blocks and does not justify greedily selecting the currently available node with the highest individual ratio $\beta / \alpha$, because a lower-ratio parent can unlock high-ratio descendants.
 
 ### 2. Tree Contraction Property
 
-Let $u \neq 1$ be a non-root node with the globally maximum ratio $\beta_u / \alpha_u$.
-Because its ratio is maximal, as soon as its parent $p$ is removed, no other node in the tree can yield a better cost reduction than $u$. Thus, $u$ must be removed immediately after $p$.
+Let $u \neq 1$ be a non-root node with the globally maximum ratio $\beta_u / \alpha_u$, and let $p$ be its parent.
+Consider any optimal removal order and the intervening blocks scheduled between $p$ and $u$. Since $p$ is the unique parent of $u$, none of those intervening blocks can be an ancestor of $u$ (nor a descendant of $u$, since $u$ has not been removed yet), so moving $u$ left across each intervening block preserves precedence. Because $\beta_u / \alpha_u$ is globally maximal, each adjacent swap left cannot increase the total cost. Repeating these swaps produces an optimal order in which $u$ is removed immediately after $p$.
 
 We can contract $u$ into $p$, forming a combined super-node $(p \circ u)$ with:
 $$\alpha(p \circ u) = \alpha(p) + \alpha(u)$$

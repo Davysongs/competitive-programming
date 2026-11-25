@@ -1282,21 +1282,21 @@
     },
     {
       "name": "pitfall_float_precision_ratios",
-      "description": "Tutorial pitfall 4: Nodes with nearly identical beta/alpha ratios that are indistinguishable as floats but differ by 1 in cross-multiplication. Requires integer comparison to order correctly.",
+      "description": "Tutorial pitfall 4: Nodes with nearly identical beta/alpha ratios that are indistinguishable as 64-bit floats but differ by 1 in cross-multiplication. Requires integer comparison to order correctly.",
       "input": {
         "N": 5,
         "alpha": [
           1,
+          999999997,
+          999999998,
           999999999,
-          1000000000,
-          1000000001,
           1000000000
         ],
         "beta": [
           1,
-          1000000000,
-          999999999,
-          1000000000,
+          999999996,
+          999999997,
+          999999998,
           999999999
         ],
         "edges": [
@@ -1318,7 +1318,7 @@
           ]
         ]
       },
-      "expected_output": 5999999997999999998
+      "expected_output": 5999999980000000005
     },
     {
       "name": "pitfall_deep_cumulative_propagation",
@@ -1524,16 +1524,16 @@
     },
     {
       "name": "pitfall_float_precision_within_subtrees",
-      "description": "Two subtrees with high-alpha parents and near-identical beta/alpha ratios among children. After merging children into parents, the cumulative ratios must be compared precisely. Float comparison would fail on these near-equal ratios.",
+      "description": "Two subtrees with high-alpha parents and near-identical aggregate beta/alpha ratios after contracting children, with cross-products differing by 1 while rounding to the same 64-bit float.",
       "input": {
         "N": 9,
         "alpha": [
           1,
-          1000000000,
+          999999996,
           1,
           1,
           1,
-          1000000000,
+          999999997,
           1,
           1,
           1
@@ -1541,13 +1541,13 @@
         "beta": [
           1,
           1,
-          999999999,
-          1000000000,
-          1000000001,
-          1,
           999999998,
-          1000000000,
-          1000000002
+          999999998,
+          999999999,
+          1,
+          999999999,
+          999999999,
+          1000000000
         ],
         "edges": [
           [
@@ -1584,7 +1584,7 @@
           ]
         ]
       },
-      "expected_output": 9000000021999999999
+      "expected_output": 8999999980000000012
     },
     {
       "name": "equal_ratios_separated",
@@ -1678,13 +1678,13 @@
     },
     {
       "name": "zero_alpha_boundary",
-      "description": "Tests boundary condition where some isotopes have zero alpha emission, affecting accumulated radiation calculations",
+      "description": "Tests minimum alpha emission (1) boundary condition across root and child isotopes",
       "input": {
         "N": 4,
         "alpha": [
-          0,
+          1,
           10,
-          0,
+          1,
           20
         ],
         "beta": [
@@ -1708,11 +1708,11 @@
           ]
         ]
       },
-      "expected_output": 2500
+      "expected_output": 3050
     },
     {
       "name": "zero_beta_boundary",
-      "description": "Tests boundary condition where some isotopes have zero beta sensitivity, potentially simplifying cost calculations",
+      "description": "Tests minimum beta sensitivity (1) boundary condition across root and child isotopes",
       "input": {
         "N": 4,
         "alpha": [
@@ -1722,9 +1722,9 @@
           10
         ],
         "beta": [
-          0,
+          1,
           50,
-          0,
+          1,
           100
         ],
         "edges": [
@@ -1742,25 +1742,25 @@
           ]
         ]
       },
-      "expected_output": 4750
+      "expected_output": 4800
     },
     {
       "name": "mixed_zero_values",
-      "description": "Tests combination of zero alpha and zero beta values in different nodes to verify robust boundary handling",
+      "description": "Tests combination of minimum (1) alpha and minimum (1) beta values in different nodes",
       "input": {
         "N": 5,
         "alpha": [
-          0,
+          1,
           20,
-          0,
+          1,
           15,
           30
         ],
         "beta": [
           10,
-          0,
+          1,
           50,
-          0,
+          1,
           100
         ],
         "edges": [
@@ -1782,7 +1782,7 @@
           ]
         ]
       },
-      "expected_output": 0
+      "expected_output": 334
     },
     {
       "name": "min_values_all",
@@ -1994,26 +1994,46 @@
     },
     {
       "name": "pq_overflow_comparison",
-      "description": "Test priority queue cross-multiplication overflow with large subtrees",
+      "description": "Test priority queue cross-multiplication overflow with unequal branch ratios whose cross-products reverse ordering at 64-bit integer overflow boundaries",
       "input": {
-        "N": 13,
+        "N": 23,
         "alpha": [
+          1,
           1000000000,
+          1,
           1000000000,
-          1000000000,
-          1000000000,
-          1000000000,
-          1000000000,
-          1000000000,
-          1000000000,
-          1000000000,
-          1000000000,
-          1000000000,
-          1000000000,
-          1000000000
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1
         ],
         "beta": [
           1,
+          1,
+          1000000000,
+          1,
+          1000000000,
+          1000000000,
+          1000000000,
+          1000000000,
+          1000000000,
+          1000000000,
+          1000000000,
           1000000000,
           1000000000,
           1000000000,
@@ -2033,52 +2053,92 @@
             2
           ],
           [
-            1,
-            7
-          ],
-          [
             2,
             3
           ],
           [
-            2,
+            1,
             4
           ],
           [
-            2,
+            4,
             5
           ],
           [
-            2,
+            4,
             6
           ],
           [
-            7,
+            4,
+            7
+          ],
+          [
+            4,
             8
           ],
           [
-            7,
+            4,
             9
           ],
           [
-            7,
+            4,
             10
           ],
           [
-            7,
+            4,
             11
           ],
           [
-            7,
+            4,
             12
           ],
           [
-            7,
+            4,
             13
+          ],
+          [
+            4,
+            14
+          ],
+          [
+            4,
+            15
+          ],
+          [
+            4,
+            16
+          ],
+          [
+            4,
+            17
+          ],
+          [
+            4,
+            18
+          ],
+          [
+            4,
+            19
+          ],
+          [
+            4,
+            20
+          ],
+          [
+            4,
+            21
+          ],
+          [
+            4,
+            22
+          ],
+          [
+            4,
+            23
           ]
         ]
       },
-      "expected_output": 78000000000000000000
+      "expected_output": 21000000211000000021
     },
     {
       "name": "total_cost_64bit_overflow",
