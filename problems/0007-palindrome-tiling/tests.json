@@ -1,0 +1,554 @@
+{
+  "io_mode": "json-stdio",
+  "comparison": "exact",
+  "float_tolerance": 0,
+  "tests": [
+    {
+      "name": "example1",
+      "description": "Scenario 'example1' with deterministic expected output 6. Traceability: Tutorial sections: Worked Example and Problem/Example consistency.",
+      "input": {
+        "n": 6,
+        "a": [
+          1,
+          2,
+          1,
+          1,
+          2,
+          1
+        ]
+      },
+      "expected_output": 6
+    },
+    {
+      "name": "example2",
+      "description": "Scenario 'example2' with deterministic expected output 7. Traceability: Tutorial sections: Worked Example and Problem/Example consistency.",
+      "input": {
+        "n": 11,
+        "a": [
+          1,
+          2,
+          1,
+          5,
+          1,
+          2,
+          1,
+          3,
+          1,
+          2,
+          1
+        ]
+      },
+      "expected_output": 7
+    },
+    {
+      "name": "example3",
+      "description": "Scenario 'example3' with deterministic expected output 0. Traceability: Tutorial sections: Worked Example and Problem/Example consistency.",
+      "input": {
+        "n": 3,
+        "a": [
+          1,
+          2,
+          3
+        ]
+      },
+      "expected_output": 0
+    },
+    {
+      "name": "single_element",
+      "description": "Scenario 'single_element' with deterministic expected output 1. Traceability: Tutorial section: Edge Cases.",
+      "input": {
+        "n": 1,
+        "a": [
+          42
+        ]
+      },
+      "expected_output": 1
+    },
+    {
+      "name": "two_same",
+      "description": "Scenario 'two_same' with deterministic expected output 2. Traceability: Tutorial sections: Common Pitfalls 1 and 4.",
+      "input": {
+        "n": 2,
+        "a": [
+          5,
+          5
+        ]
+      },
+      "expected_output": 2
+    },
+    {
+      "name": "two_diff",
+      "description": "Scenario 'two_diff' with deterministic expected output 0. Traceability: Tutorial section: Edge Cases.",
+      "input": {
+        "n": 2,
+        "a": [
+          3,
+          7
+        ]
+      },
+      "expected_output": 0
+    },
+    {
+      "name": "three_palindrome",
+      "description": "Scenario 'three_palindrome' with deterministic expected output 3. Traceability: Tutorial sections: Worked Example and Edge Cases.",
+      "input": {
+        "n": 3,
+        "a": [
+          1,
+          2,
+          1
+        ]
+      },
+      "expected_output": 3
+    },
+    {
+      "name": "three_no_pal",
+      "description": "Scenario 'three_no_pal' with deterministic expected output 0. Traceability: Tutorial section: Edge Cases.",
+      "input": {
+        "n": 3,
+        "a": [
+          1,
+          2,
+          3
+        ]
+      },
+      "expected_output": 0
+    },
+    {
+      "name": "four_all_same",
+      "description": "Scenario 'four_all_same' with deterministic expected output 4. Traceability: Tutorial sections: Worked Example and Edge Cases.",
+      "input": {
+        "n": 4,
+        "a": [
+          1,
+          1,
+          1,
+          1
+        ]
+      },
+      "expected_output": 4
+    },
+    {
+      "name": "four_even_palindrome",
+      "description": "Scenario 'four_even_palindrome' with deterministic expected output 4. Traceability: Tutorial sections: Worked Example and Edge Cases.",
+      "input": {
+        "n": 4,
+        "a": [
+          1,
+          2,
+          2,
+          1
+        ]
+      },
+      "expected_output": 4
+    },
+    {
+      "name": "four_collapsed_pair",
+      "description": "Scenario 'four_collapsed_pair' with deterministic expected output 2. Traceability: Tutorial sections: Worked Example and Edge Cases.",
+      "input": {
+        "n": 4,
+        "a": [
+          1,
+          2,
+          1,
+          2
+        ]
+      },
+      "expected_output": 2
+    },
+    {
+      "name": "five_palindrome",
+      "description": "Scenario 'five_palindrome' with deterministic expected output 5. Traceability: Tutorial sections: Worked Example and Edge Cases.",
+      "input": {
+        "n": 5,
+        "a": [
+          1,
+          2,
+          1,
+          2,
+          1
+        ]
+      },
+      "expected_output": 5
+    },
+    {
+      "name": "five_no_pal",
+      "description": "Scenario 'five_no_pal' with deterministic expected output 0. Traceability: Tutorial section: Edge Cases.",
+      "input": {
+        "n": 5,
+        "a": [
+          10,
+          20,
+          30,
+          40,
+          50
+        ]
+      },
+      "expected_output": 0
+    },
+    {
+      "name": "all_same_5",
+      "description": "Scenario 'all_same_5' with deterministic expected output 5. Traceability: Tutorial sections: Worked Example and Edge Cases.",
+      "input": {
+        "n": 5,
+        "a": [
+          3,
+          3,
+          3,
+          3,
+          3
+        ]
+      },
+      "expected_output": 5
+    },
+    {
+      "name": "partial_collapse",
+      "description": "Scenario 'partial_collapse' with deterministic expected output 2. Traceability: Tutorial section: Worked Example (multi-step collapse + outer match).",
+      "input": {
+        "n": 5,
+        "a": [
+          1,
+          2,
+          1,
+          2,
+          3
+        ]
+      },
+      "expected_output": 2
+    },
+    {
+      "name": "non_pal_collapse_k2",
+      "description": "Scenario 'non_pal_collapse_k2' with deterministic expected output 2. Traceability: Tutorial section: Edge Cases (non-palindrome with partial collapse).",
+      "input": {
+        "n": 6,
+        "a": [
+          2,
+          1,
+          2,
+          1,
+          2,
+          1
+        ]
+      },
+      "expected_output": 2
+    },
+    {
+      "name": "partial_sym",
+      "description": "Scenario 'partial_sym' with deterministic expected output 4. Traceability: Tutorial sections: Worked Example and Edge Cases.",
+      "input": {
+        "n": 6,
+        "a": [
+          1,
+          2,
+          1,
+          3,
+          1,
+          1
+        ]
+      },
+      "expected_output": 4
+    },
+    {
+      "name": "six_even_pal",
+      "description": "Scenario 'six_even_pal' with deterministic expected output 6. Traceability: Tutorial sections: Worked Example and Edge Cases.",
+      "input": {
+        "n": 6,
+        "a": [
+          1,
+          1,
+          2,
+          2,
+          1,
+          1
+        ]
+      },
+      "expected_output": 6
+    },
+    {
+      "name": "seven_palindrome",
+      "description": "Scenario 'seven_palindrome' with deterministic expected output 7. Traceability: Tutorial sections: Worked Example and Edge Cases.",
+      "input": {
+        "n": 7,
+        "a": [
+          1,
+          2,
+          1,
+          7,
+          1,
+          2,
+          1
+        ]
+      },
+      "expected_output": 7
+    },
+    {
+      "name": "seven_inner_collapse",
+      "description": "Scenario 'seven_inner_collapse' with deterministic expected output 7. Traceability: Tutorial sections: Worked Example and Edge Cases.",
+      "input": {
+        "n": 7,
+        "a": [
+          1,
+          1,
+          2,
+          3,
+          2,
+          1,
+          1
+        ]
+      },
+      "expected_output": 7
+    },
+    {
+      "name": "seven_boundary_sym",
+      "description": "Scenario 'seven_boundary_sym' with deterministic expected output 7. Traceability: Tutorial sections: Worked Example and Edge Cases.",
+      "input": {
+        "n": 7,
+        "a": [
+          3,
+          1,
+          2,
+          1,
+          2,
+          1,
+          3
+        ]
+      },
+      "expected_output": 7
+    },
+    {
+      "name": "eight_no_pal",
+      "description": "Scenario 'eight_no_pal' with deterministic expected output 0. Traceability: Tutorial section: Edge Cases.",
+      "input": {
+        "n": 8,
+        "a": [
+          1,
+          2,
+          1,
+          5,
+          6,
+          1,
+          2,
+          1
+        ]
+      },
+      "expected_output": 0
+    },
+    {
+      "name": "eight_palindrome",
+      "description": "Scenario 'eight_palindrome' with deterministic expected output 8. Traceability: Tutorial sections: Worked Example and Edge Cases.",
+      "input": {
+        "n": 8,
+        "a": [
+          1,
+          2,
+          1,
+          3,
+          3,
+          1,
+          2,
+          1
+        ]
+      },
+      "expected_output": 8
+    },
+    {
+      "name": "nine_deep",
+      "description": "Scenario 'nine_deep' with deterministic expected output 9. Traceability: Tutorial sections: Worked Example and Edge Cases.",
+      "input": {
+        "n": 9,
+        "a": [
+          1,
+          2,
+          1,
+          3,
+          5,
+          3,
+          1,
+          2,
+          1
+        ]
+      },
+      "expected_output": 9
+    },
+    {
+      "name": "nine_chain",
+      "description": "Scenario 'nine_chain' with deterministic expected output 9. Traceability: Tutorial sections: Worked Example and Edge Cases.",
+      "input": {
+        "n": 9,
+        "a": [
+          1,
+          2,
+          3,
+          2,
+          1,
+          2,
+          3,
+          2,
+          1
+        ]
+      },
+      "expected_output": 9
+    },
+    {
+      "name": "nine_collapsed",
+      "description": "Scenario 'nine_collapsed' with deterministic expected output 9. Traceability: Tutorial sections: Worked Example and Edge Cases.",
+      "input": {
+        "n": 9,
+        "a": [
+          2,
+          1,
+          2,
+          1,
+          5,
+          1,
+          2,
+          1,
+          2
+        ]
+      },
+      "expected_output": 9
+    },
+    {
+      "name": "boundary_outer_pair",
+      "description": "Scenario 'boundary_outer_pair' with deterministic expected output 2. Traceability: Tutorial sections: Common Pitfalls 1 and 4.",
+      "input": {
+        "n": 2,
+        "a": [
+          1000000000,
+          1000000000
+        ]
+      },
+      "expected_output": 2
+    },
+    {
+      "name": "boundary_sandwich",
+      "description": "Scenario 'boundary_sandwich' with deterministic expected output 3. Traceability: Tutorial sections: Worked Example and Edge Cases.",
+      "input": {
+        "n": 3,
+        "a": [
+          1000000000,
+          1,
+          1000000000
+        ]
+      },
+      "expected_output": 3
+    },
+    {
+      "name": "boundary_large_pal",
+      "description": "Scenario 'boundary_large_pal' with deterministic expected output 3. Traceability: Tutorial sections: Worked Example and Edge Cases.",
+      "input": {
+        "n": 3,
+        "a": [
+          1000000000,
+          999999999,
+          1000000000
+        ]
+      },
+      "expected_output": 3
+    },
+    {
+      "name": "identical_values_tiebreaker",
+      "description": "Scenario 'identical_values_tiebreaker' with deterministic expected output 6. Traceability: Tutorial sections: Worked Example and Edge Cases.",
+      "input": {
+        "n": 6,
+        "a": [
+          7,
+          7,
+          7,
+          7,
+          7,
+          7
+        ]
+      },
+      "expected_output": 6
+    },
+    {
+      "name": "stress_n50_dense",
+      "description": "Scenario 'stress_n50_dense' with deterministic expected output 27. Traceability: Tutorial section: Complexity Analysis.",
+      "input": {
+        "n": 50
+      },
+      "expected_output": 27,
+      "generators": [
+        {
+          "type": "random_array",
+          "field": "a",
+          "n": 50,
+          "min": 1,
+          "max": 3,
+          "seed": 77
+        }
+      ]
+    },
+    {
+      "name": "stress_n100_dense",
+      "description": "Scenario 'stress_n100_dense' with deterministic expected output 39. Traceability: Tutorial section: Complexity Analysis.",
+      "input": {
+        "n": 100
+      },
+      "expected_output": 39,
+      "generators": [
+        {
+          "type": "random_array",
+          "field": "a",
+          "n": 100,
+          "min": 1,
+          "max": 4,
+          "seed": 999
+        }
+      ]
+    },
+    {
+      "name": "type2_merge_regression",
+      "description": "Scenario 'type2_merge_regression' with deterministic expected output 5. Traceability: Tutorial section: Common Pitfall 3 (Type-2 merge must be present).",
+      "input": {
+        "n": 5,
+        "a": [
+          2,
+          1,
+          2,
+          1,
+          2
+        ]
+      },
+      "expected_output": 5
+    },
+    {
+      "name": "k1_only_valid_tiling",
+      "description": "Scenario 'k1_only_valid_tiling' with deterministic expected output 3. Traceability: Tutorial sections: Worked Example and outer-pair matching logic.",
+      "input": {
+        "n": 3,
+        "a": [
+          10,
+          3,
+          10
+        ]
+      },
+      "expected_output": 3
+    },
+    {
+      "name": "pitfall1_inner_count",
+      "description": "Scenario 'pitfall1_inner_count' with deterministic expected output 2. Traceability: Tutorial section: Common Pitfall 1 (inner-count vs outer-count).",
+      "input": {
+        "n": 2,
+        "a": [
+          5,
+          5
+        ]
+      },
+      "expected_output": 2
+    },
+    {
+      "name": "pitfall4_k1_equals_j",
+      "description": "Scenario 'pitfall4_k1_equals_j' with deterministic expected output 2. Traceability: Tutorial section: Common Pitfall 4 (k1=j empty interior case).",
+      "input": {
+        "n": 2,
+        "a": [
+          5,
+          5
+        ]
+      },
+      "expected_output": 2
+    }
+  ]
+}
